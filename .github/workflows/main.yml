@@ -11,8 +11,8 @@ on:
       - 'tests/*.py'
 
 jobs:
-  build:
 
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

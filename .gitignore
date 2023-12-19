@@ -3,3 +3,4 @@ venv
 src/__pycache__
 tests/__pycache__
 *.pyc
+tests/__pycache__/test_trading.cpython-311-pytest-7.4.3.pyc

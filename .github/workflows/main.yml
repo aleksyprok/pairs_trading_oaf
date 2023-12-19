@@ -41,7 +41,6 @@ jobs:
         pip install pywin32==306
         pip install -r requirements.txt
 
-      
     - name: Run tests with pytest
       run: |
         pytest tests/

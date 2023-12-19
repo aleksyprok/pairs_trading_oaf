@@ -1,3 +1,8 @@
+"""
+Setup file for pairs trading strategy.
+Enables pairs_trading_oaf to be installed as a package.
+"""
+
 from setuptools import setup, find_packages
 
 setup(

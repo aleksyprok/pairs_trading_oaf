@@ -12,4 +12,4 @@ def run_pairs_trade_strategy(stock_a_ticker: str = 'AAPL',
                              testing_end_date: str = '2021-06-01'):
     print(stock_a_ticker)
     print(stock_b_ticker)
-    return 4
+    return 1

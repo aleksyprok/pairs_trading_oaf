@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     paths:
-      - 'src/*.py'
+      - 'pairs_trading_oaf/*.py'
       - 'tests/*.py'
   pull_request:
     paths:

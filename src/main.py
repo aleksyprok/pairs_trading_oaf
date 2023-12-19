@@ -46,7 +46,7 @@
 # Short A and long B
 # If ratio < threshhold:
 # Long A and short B
-# Possible positions = [None, "long A short B", "short A long B" 
+# Possible positions = [None, "long A short B", "short A long B"
 
 # # Example usage
 # msft = fetch_data('MSFT', '2020-01-01', '2023-01-01')

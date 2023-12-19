@@ -1,5 +1,6 @@
 # import yfinance as yf
 # import pandas as pd
+import trading
 
 # def fetch_data(symbol, start_date, end_date):
 #     return yf.download(symbol, start=start_date, end=end_date)['Close']
@@ -54,3 +55,4 @@
 # ratio = calculate_ratio(msft, aapl)
 # pnl, trade_log = execute_strategy(ratio)
 # print(f"Total PnL: {pnl}%")
+trading.run_pairs_trade_strategy()

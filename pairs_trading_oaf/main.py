@@ -55,5 +55,5 @@ import pairs_trading_oaf.trading as trading
 # ratio = calculate_ratio(msft, aapl)
 # pnl, trade_log = execute_strategy(ratio)
 # print(f"Total PnL: {pnl}%")
-print(1)
+print(2)
 trading.run_pairs_trade_strategy()

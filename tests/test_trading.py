@@ -2,7 +2,7 @@
 Test the functions in src/trading.py
 """
 
-import src.trading as trading
+import pairs_trading_oaf.trading as trading
 
 def test_run_pairs_trade_strategy_defaults():
     """

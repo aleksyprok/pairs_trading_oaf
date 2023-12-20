@@ -46,15 +46,39 @@ def run_pairs_trade_strategy(stock_a_ticker: str = 'AAPL',
                                          start=testing_start_date,
                                          end=testing_end_date)['Close']
     
-    # Calculate ratio
     ratio = stock_a_training_prices / stock_b_training_prices
 
-    # Calculate mean and standard deviation
     mean = ratio.mean()
     std = ratio.std()
 
-    # Calculate thresholds
-    sell_threshold = mean + 0.5 * std
-    buy_threshold = mean - 0.5 * std
+    long_stock_a_threshold = mean - 0.5 * std
+    long_stock_b_threshold = mean + 0.5 * std
+
+    # Execute strategy
+    execute_trades(stock_a_ticker,
+                   stock_b_ticker,
+                   testing_start_date,
+                   testing_end_date,
+                   long_stock_a_threshold,
+                   long_stock_b_threshold)
     
     return 1
+
+def execute_trades(stock_a_ticker, stock_b_ticker, start_date, end_date,
+                   long_stock_a_threshold, long_stock_b_threshold):
+
+    stock_a_prices = yf.download(stock_a_ticker,
+                                 start=start_date,
+                                 end=end_date)['Close']
+    stock_b_prices = yf.download(stock_b_ticker,
+                                 start=start_date,
+                                 end=end_date)['Close']
+    ratio = stock_a_prices / stock_b_prices
+
+    for it in range(len(ratio)):
+        if ratio.iloc[it] < long_stock_a_threshold:
+            print(f"Long {stock_a_ticker} and short {stock_b_ticker}")
+        elif ratio.iloc[it] > long_stock_b_threshold:
+            print(f"Short {stock_a_ticker} and long {stock_b_ticker}")
+        else:
+            print("No trade")

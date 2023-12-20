@@ -26,6 +26,8 @@ class Portfolio:
         self.stock_a_over_time = []
         self.stock_b_over_time = []
         self.position_over_time = []
+        self.trading_start_date = None
+        self.trading_end_date = None
 
     def get_value(self, stock_a_price, stock_b_price):
         """
@@ -58,6 +60,8 @@ class Portfolio:
         """
         Execute trades based on the trading thresholds.
         """
+        self.trading_start_date = start_date
+        self.trading_end_date = end_date
         stock_a_prices = yf.download(self.stock_a_ticker,
                                      start=start_date,
                                      end=end_date)['Close']
@@ -117,4 +121,4 @@ def run_pairs_trade_strategy(stock_a_ticker: str = 'AAPL',
     portfolio.calculate_trading_thresholds(training_start_date, training_end_date)
     portfolio.execute_trades(testing_start_date, testing_end_date)
 
-    return 1
+    return portfolio

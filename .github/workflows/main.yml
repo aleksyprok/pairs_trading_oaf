@@ -3,12 +3,12 @@ name: CI
 on:
   push:
     paths:
-      - 'pairs_trading_oaf/*.py'
-      - 'tests/*.py'
+      - 'pairs_trading_oaf/'
+      - 'tests/'
   pull_request:
     paths:
-      - 'pairs_trading_oaf/*.py'
-      - 'tests/*.py'
+      - 'pairs_trading_oaf/'
+      - 'tests/'
 
 jobs:
 

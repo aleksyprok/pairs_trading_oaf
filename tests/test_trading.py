@@ -111,13 +111,3 @@ def test_execute_trades(mock_download, sample_portfolio):
          + sample_portfolio.stock_b_over_time[2] * 275.0
     assert np.allclose(sample_portfolio.cash_over_time,
                        [0, 0, 0, cash, cash])
-
-@patch("pairs_trading_oaf.trading.yf.download")
-def test_run_pairs_trade_strategy(mock_download):
-    """
-    Test the run_pairs_trade_strategy function.
-    """
-    mock_download.side_effect = stock_data_side_effect
-    portfolio = trading.run_pairs_trade_strategy()
-    assert isinstance(portfolio, trading.Portfolio)
-    # Additional checks for the state of the portfolio

@@ -43,6 +43,7 @@ jobs:
 
     - name: Run tests with pytest
       run: |
+        pwd
         coverage run -m pytest tests/
         coverage report
         

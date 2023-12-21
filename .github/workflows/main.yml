@@ -43,9 +43,12 @@ jobs:
 
     - name: Run tests with pytest
       run: |
-        pytest tests/
+        coverage run -m pytest
+        coverage report
 
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ./coverage/reports/
+        fail_ci_if_error: true

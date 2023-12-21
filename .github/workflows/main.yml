@@ -47,7 +47,7 @@ jobs:
         coverage report
         
     - name: List coverage reports
-      run: ls -lR
+      run: ls -la
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2

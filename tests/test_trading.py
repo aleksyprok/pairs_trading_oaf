@@ -10,7 +10,7 @@ import pairs_trading_oaf.trading as trading
 mocked_stock_a_data = pd.DataFrame({'Close': [100.0, 105.0, 95.0, 110.0, 90.0]})
 mocked_stock_b_data = pd.DataFrame({'Close': [200.0, 210.0, 190.0, 220.0, 180.0]})
 
-def stock_data_side_effect(ticker, _start, _end):
+def stock_data_side_effect(ticker, start=None, end=None):
     """
     Side effect for mocking yfinance.download.
     """

@@ -43,14 +43,11 @@ jobs:
 
     - name: Run tests with pytest
       run: |
-        pwd
-        ls -lR
-        ls -lR src
         coverage run -m pytest tests/
         coverage report
         
     - name: List coverage reports
-      run: ls -lR ./coverage/
+      run: ls -lR .coverage
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2

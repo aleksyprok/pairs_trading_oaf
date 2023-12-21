@@ -2,13 +2,17 @@
 Test the functions in pairs_trading_oaf/trading.py
 """
 from unittest.mock import patch
+import numpy as np
 import pandas as pd
 import pytest
 import pairs_trading_oaf.trading as trading
 
 # Sample data for mocking
 mocked_stock_a_data = pd.DataFrame({'Close': [100.0, 105.0, 95.0, 110.0, 90.0]})
-mocked_stock_b_data = pd.DataFrame({'Close': [200.0, 210.0, 190.0, 220.0, 180.0]})
+mocked_stock_b_data = pd.DataFrame({'Close': [200.0, 175.0, 190.0, 275.0, 180.0]})
+# ratio = [0.5, 0.6, 0.5, 0.4, 0.5]
+# mean = 0.5
+# std = 0.0707107
 
 def stock_data_side_effect(ticker, start=None, end=None): # pylint: disable=unused-argument
     """
@@ -53,24 +57,60 @@ def test_calculate_trading_thresholds(mock_download, sample_portfolio):
     """
     Test the calculation of trading thresholds.
     """
+    # Arrange
     mock_download.side_effect = stock_data_side_effect
+    # expected_ratio = [0.5, 0.6, 0.5, 0.4, 0.5]
+    expected_mean = 0.5
+    expected_std = 0.0707107
+    expected_long_stock_a_threshold = expected_mean - 0.5 * expected_std
+    expected_long_stock_b_threshold = expected_mean + 0.5 * expected_std
+
+    # Act
     sample_portfolio.calculate_trading_thresholds("2020-01-01", "2020-12-31")
-    assert sample_portfolio.long_stock_a_threshold is not None
-    assert sample_portfolio.long_stock_b_threshold is not None
-    # More detailed checks can be added here
+
+    # Assert
+    assert np.isclose(sample_portfolio.long_stock_a_threshold, expected_long_stock_a_threshold)
+    assert np.isclose(sample_portfolio.long_stock_b_threshold, expected_long_stock_b_threshold)
 
 @patch("pairs_trading_oaf.trading.yf.download")
 def test_execute_trades(mock_download, sample_portfolio):
     """
-    Test the execution of trades.
+    Test the execution of trades in the Portfolio.
     """
+    # Arrange
     mock_download.side_effect = stock_data_side_effect
     sample_portfolio.calculate_trading_thresholds("2020-01-01", "2020-12-31")
+
+    # Act
     sample_portfolio.execute_trades("2021-01-01", "2021-12-31")
+
+    # Assert
     assert sample_portfolio.trading_start_date == "2021-01-01"
     assert sample_portfolio.trading_end_date == "2021-12-31"
-    assert 1 == 1
-    # More assertions on portfolio state after trade execution
+    # ratio over time = [0.5, 0.6, 0.5, 0.4, 0.5]
+    # stock_a_prices = [100.0, 105.0, 95.0, 110.0, 90.0]
+    # stock_b_prices = [200.0, 175.0, 190.0, 275.0, 180.0]
+    assert sample_portfolio.position_over_time == [None,
+                                                   'short A long B',
+                                                   'short A long B',
+                                                   'long A short B',
+                                                   'long A short B']
+    assert np.allclose(sample_portfolio.stock_a_over_time,
+                       [0,
+                        -sample_portfolio.position_limit / 105.0,
+                        -sample_portfolio.position_limit / 105.0,
+                        +sample_portfolio.position_limit / 110.0,
+                        +sample_portfolio.position_limit / 110.0])
+    assert np.allclose(sample_portfolio.stock_b_over_time,
+                       [0,
+                        +sample_portfolio.position_limit / 175.0,
+                        +sample_portfolio.position_limit / 175.0,
+                        -sample_portfolio.position_limit / 275.0,
+                        -sample_portfolio.position_limit / 275.0])
+    cash = sample_portfolio.stock_a_over_time[2] * 110.0 \
+         + sample_portfolio.stock_b_over_time[2] * 275.0
+    assert np.allclose(sample_portfolio.cash_over_time,
+                       [0, 0, 0, cash, cash])
 
 @patch("pairs_trading_oaf.trading.yf.download")
 def test_run_pairs_trade_strategy(mock_download):

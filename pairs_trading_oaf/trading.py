@@ -29,12 +29,6 @@ class Portfolio:
         self.trading_start_date = None
         self.trading_end_date = None
 
-    def get_value(self, stock_a_price, stock_b_price):
-        """
-        Get the value of the portfolio.
-        """
-        return self.cash + self.stock_a * stock_a_price + self.stock_b * stock_b_price
-
     def calculate_trading_thresholds(self, training_start_date: str, training_end_date: str):
         """
         Calculate and store the trading thresholds to the portfolio.
@@ -83,7 +77,7 @@ class Portfolio:
             elif self.position == 'short A long B' and ratio.iloc[it] < self.long_stock_a_threshold:
                 # Flip postion from short A long B to long A short B
                 # Sell B and buy A
-                self.cash -= self.stock_a * stock_a_prices.iloc[it]
+                self.cash += self.stock_a * stock_a_prices.iloc[it]
                 self.cash += self.stock_b * stock_b_prices.iloc[it]
                 self.stock_a = +self.position_limit / stock_a_prices.iloc[it]
                 self.stock_b = -self.position_limit / stock_b_prices.iloc[it]
@@ -92,7 +86,7 @@ class Portfolio:
                 # Flip postion from long A short B to short A long B
                 # Sell A and buy B
                 self.cash += self.stock_a * stock_a_prices.iloc[it]
-                self.cash -= self.stock_b * stock_b_prices.iloc[it]
+                self.cash += self.stock_b * stock_b_prices.iloc[it]
                 self.stock_a = -self.position_limit / stock_a_prices.iloc[it]
                 self.stock_b = +self.position_limit / stock_b_prices.iloc[it]
                 self.position = 'short A long B'

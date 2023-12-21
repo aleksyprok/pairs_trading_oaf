@@ -35,11 +35,13 @@ jobs:
       - name: Run tests with pytest
         run: |
           coverage run -m pytest tests/
-          coverage xml  # Generate XML report
-        
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+
+      - name: Generate Coverage Report
+        run: |
+          coverage html
+
+      - name: Deploy Coverage Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml  # Specify the coverage XML report
-          fail_ci_if_error: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./htmlcov

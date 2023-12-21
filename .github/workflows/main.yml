@@ -36,7 +36,6 @@ jobs:
         run: |
           coverage run -m pytest tests/
           coverage xml  # Generate XML report
-          ls -la  # List files to verify coverage.xml creation
         
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2

@@ -43,7 +43,7 @@ jobs:
 
     - name: Run tests with pytest
       run: |
-        coverage run -m pytest
+        coverage run -m pytest tests/
         coverage report
 
     - name: Upload coverage to Codecov

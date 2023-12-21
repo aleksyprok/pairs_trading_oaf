@@ -3,12 +3,12 @@ name: CI
 on:
   push:
     paths:
-      - 'pairs_trading_oaf/*.py'
-      - 'tests/*.py'
+      - 'pairs_trading_oaf/'
+      - 'tests/'
   pull_request:
     paths:
-      - 'pairs_trading_oaf/*.py'
-      - 'tests/*.py'
+      - 'pairs_trading_oaf/'
+      - 'tests/'
 
 jobs:
 
@@ -43,7 +43,7 @@ jobs:
 
     - name: Run tests with pytest
       run: |
-        coverage run -m pytest
+        coverage run -m pytest tests/
         coverage report
 
     - name: Upload coverage to Codecov

@@ -26,4 +26,5 @@ plotting.plot_ratio_series(STOCK_A_TICKER, STOCK_B_TICKER,
                            long_stock_a_threshold = portfolio.long_stock_a_threshold,
                            long_stock_b_threshold = portfolio.long_stock_b_threshold)
 plotting.plot_pnl(portfolio)
+
 plt.show()

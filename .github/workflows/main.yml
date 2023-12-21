@@ -44,7 +44,8 @@ jobs:
     - name: Run tests with pytest
       run: |
         pwd
-        ls
+        ls -lR
+        ls -lR src
         coverage run -m pytest tests/
         coverage report
         

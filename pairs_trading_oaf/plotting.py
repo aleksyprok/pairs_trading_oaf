@@ -105,7 +105,7 @@ def plot_pnl(portfolio):
 
     ax.plot(stock_a_prices.index, portfolio.cash_over_time, label='Cash')
     ax.plot(stock_a_prices.index,
-            stock_a_portfolio_value, 
+            stock_a_portfolio_value,
             label='Stock A Holdings * Stock A Price')
     ax.plot(stock_a_prices.index,
             stock_b_portfolio_value,

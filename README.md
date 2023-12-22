@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/username/reponame/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/username/reponame)
+
 # pairs_trading_oaf
 Simple code to pairs trade two stocks.
 

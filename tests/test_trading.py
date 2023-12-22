@@ -1,5 +1,5 @@
 """
-Test the functions in src/trading.py
+Test the functions in pairs_trading_oaf/trading.py
 """
 
 import pairs_trading_oaf.trading as trading

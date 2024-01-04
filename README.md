@@ -1,4 +1,5 @@
-# pairs_trading_oaf
+# Introduction:
+
 In this release, our focus is to centralize the fundamental pairs trading strategies within this repository. This effort is aimed at simplifying the comparison of different strategies and to facilitate easier collaboration across our team. By bringing these strategies together in one place, we make it more convenient for team members to access, compare, and contribute to the development of these trading methods. This repository serves as a central hub for our ongoing efforts in refining and enhancing pairs trading strategies.
 
 # Installation instructions:
@@ -13,7 +14,7 @@ In this release, our focus is to centralize the fundamental pairs trading strate
 1. Enter the pairs_trading_oaf diretory.
 2. Execute main.py using e.g. `python main.py`.
 
-# File Structure Overview
+# File Structure Overview:
 
 - `.github/workflows`: Contains the .yml which directs the automatic testing.
 - `pairs_trading_oaf`: The main application directory.

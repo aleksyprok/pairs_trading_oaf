@@ -31,4 +31,4 @@ import pairs_trading_oaf.trading as trading
 # plt.show()
 
 # Read the CSV file
-df = trading.read_csv_file("Price Data - CSV - Formation Period excl 2020.csv")
+df = trading.read_csv("Price Data - CSV - Formation Period excl 2020.csv")

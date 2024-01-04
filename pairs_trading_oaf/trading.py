@@ -102,9 +102,9 @@ class Portfolio:
         self.stock_b_over_time.append(self.stock_b)
         self.position_over_time.append(self.position)
 
-def read_csv_file(filename: str):
+def read_csv(filename: str):
     """
-    Read a CSV file and return a list pandas dataframe object.
+    Read a CSV file and return a pandas dataframe object.
 
     Parameters
     ----------
@@ -113,7 +113,7 @@ def read_csv_file(filename: str):
         The filename to read.
         It can be one of the following:
         - "Price Data - CSV - Formation Period excl 2020.csv"
-        - "Price Data - CSV - Formation Period=2020.csv"
+        - "Price Data - CSV - Formation Period.csv"
         - "Price Data - CSV - Full Periods.csv"
         - "Price Data - CSV - Trading Period.csv"
     """
@@ -121,6 +121,7 @@ def read_csv_file(filename: str):
     current_dir = os.path.dirname(__file__)
     data_dir = os.path.join(current_dir, '..', 'data')
     filepath = os.path.join(data_dir, filename)
+
     data = pd.read_csv(filepath)
 
     return data

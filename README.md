@@ -27,3 +27,9 @@ In this release, our focus is to centralize the fundamental pairs trading strate
 - `README.md`: The file you are currently reading, with instructions and information about this project.
 - `requirements.txt`: Lists all Python dependencies.
 - `setup.py`: A script for setting up the application.
+
+# Developer Advice
+
+- **Issue Tracking for New Features**: Before adding new features, you are encouraged to raise an issue in the repository. This helps in tracking requests and discussions. When creating a new branch for the feature, include the issue number in the branch name for easy reference.
+
+- **Code Style and Linting**: You are encouraged to follow the PyLint linting style to maintain code quality and consistency. You can install the PyLint package directly into Visual Studio Code to aid in adhering to these standards.

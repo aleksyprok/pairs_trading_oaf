@@ -1,34 +1,37 @@
 """
-Main module for pairs trading strategy.
+Main module for initialising and executing pairs trades.
+
+Note that postition limit gives the maximum position size for each stock in the pair in USD.
+
+We assume that only three possible positions are allowed:
+- long stock A short stock B
+- long stock B short stock A
+- no position
+
+When we long stock A and short stock B, we buy position_limit worth of stock A and short
+position_limit worth of stock B and vice versa when we long stock B and short stock A.
 """
 
-# import matplotlib.pyplot as plt
-import pairs_trading_oaf.trading_old as trading_old
-# import pairs_trading_oaf.plotting as plotting
+from pairs_trading_oaf import trading
+from pairs_trading_oaf import portfolio
+from pairs_trading_oaf import strategies
 
-# STOCK_A_TICKER = 'AAPL'
-# STOCK_B_TICKER = 'MSFT'
-# TRAINING_START_DATE = '2010-01-01'
-# TRAINING_END_DATE = '2015-01-01'
-# TESTING_START_DATE = '2015-01-02'
-# TESTING_END_DATE = '2022-01-01'
-# portfolio = trading.run_pairs_trade_strategy(stock_a_ticker = STOCK_A_TICKER,
-#                                              stock_b_ticker = STOCK_B_TICKER,
-#                                              training_start_date = TRAINING_START_DATE,
-#                                              training_end_date = TRAINING_END_DATE,
-#                                              testing_start_date = TESTING_START_DATE,
-#                                              testing_end_date = TESTING_END_DATE)
-# plotting.plot_price_series(STOCK_A_TICKER, STOCK_B_TICKER,
-#                            TRAINING_START_DATE, TRAINING_END_DATE,
-#                            TESTING_START_DATE, TESTING_END_DATE)
-# plotting.plot_ratio_series(STOCK_A_TICKER, STOCK_B_TICKER,
-#                            TRAINING_START_DATE, TRAINING_END_DATE,
-#                            TESTING_START_DATE, TESTING_END_DATE,
-#                            long_stock_a_threshold = portfolio.long_stock_a_threshold,
-#                            long_stock_b_threshold = portfolio.long_stock_b_threshold)
-# plotting.plot_pnl(portfolio)
+TRAINING_DATA_FNAME = "Price Data - CSV - Formation Period.csv"
+TESTING_DATA_FNAME = "Price Data - CSV - Trading Period.csv"
+POSITION_LIMIT = int(1e6) # 1 million USD
+stock_pair_labels_list = [
+    ("Microsoft Corporation (NasdaqGS:MSFT)", "Apple Inc. (NasdaqGS:AAPL)"),
+    ("Bank of America Corporation (NYSE:BAC)", "JPMorgan Chase & Co. (NYSE:JPM)"),
+]
 
-# plt.show()
+master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
+                                             TRAINING_DATA_FNAME,
+                                             TESTING_DATA_FNAME)
+for stock_pair_labels in stock_pair_labels_list:
+    pair_portfolio = \
+        portfolio.PairPortfolio(stock_pair_labels,
+                                strategies.StrategyA,
+                                master_portfolio)
+    master_portfolio.add_pair_portfolio(pair_portfolio)
 
-# Read the CSV file
-df = trading_old.read_csv("Price Data - CSV - Formation Period excl 2020.csv")
+trading.simulate_trading(master_portfolio)

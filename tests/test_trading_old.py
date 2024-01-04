@@ -5,7 +5,7 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 import pytest
-import pairs_trading_oaf.trading as trading
+import pairs_trading_oaf.trading_old as trading_old
 
 # Sample data for mocking
 mocked_stock_a_data = pd.DataFrame({'Close': [100.0, 105.0, 95.0, 110.0, 90.0]})
@@ -29,7 +29,7 @@ def fixture_sample_portfolio():
     """
     Create a sample portfolio object.
     """
-    return trading.Portfolio("AAPL", "MSFT")
+    return trading_old.Portfolio("AAPL", "MSFT")
 
 def test_portfolio_initialization(sample_portfolio):
     """
@@ -52,7 +52,7 @@ def test_portfolio_initialization(sample_portfolio):
     assert sample_portfolio.trading_end_date is None
     assert len(sample_portfolio.__dict__) == 15
 
-@patch("pairs_trading_oaf.trading.yf.download")
+@patch("pairs_trading_oaf.trading_old.yf.download")
 def test_calculate_trading_thresholds(mock_download, sample_portfolio):
     """
     Test the calculation of trading thresholds.
@@ -72,7 +72,7 @@ def test_calculate_trading_thresholds(mock_download, sample_portfolio):
     assert np.isclose(sample_portfolio.long_stock_a_threshold, expected_long_stock_a_threshold)
     assert np.isclose(sample_portfolio.long_stock_b_threshold, expected_long_stock_b_threshold)
 
-@patch("pairs_trading_oaf.trading.yf.download")
+@patch("pairs_trading_oaf.trading_old.yf.download")
 def test_execute_trades(mock_download, sample_portfolio):
     """
     Test the execution of trades in the Portfolio.
@@ -121,7 +121,7 @@ def test_read_csv():
                  'Price Data - CSV - Full Periods.csv',
                  'Price Data - CSV - Trading Period.csv']
     for filename in filenames:
-        df = trading.read_csv(filename)
+        df = trading_old.read_csv(filename)
         assert isinstance(df, pd.DataFrame)
         assert not df.empty
 
@@ -130,4 +130,4 @@ def test_read_csv_invalid_path():
     Test reading from an invalid file path.
     """
     with pytest.raises(FileNotFoundError):
-        trading.read_csv('nonexistent_file.csv')
+        trading_old.read_csv('nonexistent_file.csv')

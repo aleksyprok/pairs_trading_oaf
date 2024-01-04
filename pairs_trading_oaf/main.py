@@ -3,7 +3,7 @@ Main module for pairs trading strategy.
 """
 
 # import matplotlib.pyplot as plt
-import pairs_trading_oaf.trading as trading
+import pairs_trading_oaf.trading_old as trading_old
 # import pairs_trading_oaf.plotting as plotting
 
 # STOCK_A_TICKER = 'AAPL'
@@ -31,4 +31,4 @@ import pairs_trading_oaf.trading as trading
 # plt.show()
 
 # Read the CSV file
-df = trading.read_csv("Price Data - CSV - Formation Period excl 2020.csv")
+df = trading_old.read_csv("Price Data - CSV - Formation Period excl 2020.csv")

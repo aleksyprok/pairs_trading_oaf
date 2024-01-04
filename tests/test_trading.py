@@ -111,3 +111,23 @@ def test_execute_trades(mock_download, sample_portfolio):
          + sample_portfolio.stock_b_over_time[2] * 275.0
     assert np.allclose(sample_portfolio.cash_over_time,
                        [0, 0, 0, cash, cash])
+
+def test_read_csv():
+    """
+    Test reading a valid CSV file.
+    """
+    filenames = ['Price Data - CSV - Formation Period excl 2020.csv',
+                 'Price Data - CSV - Formation Period.csv',
+                 'Price Data - CSV - Full Periods.csv',
+                 'Price Data - CSV - Trading Period.csv']
+    for filename in filenames:
+        df = trading.read_csv(filename)
+        assert isinstance(df, pd.DataFrame)
+        assert not df.empty
+
+def test_read_csv_invalid_path():
+    """
+    Test reading from an invalid file path.
+    """
+    with pytest.raises(FileNotFoundError):
+        trading.read_csv('nonexistent_file.csv')

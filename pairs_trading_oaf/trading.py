@@ -1,7 +1,8 @@
 """
 Functions to execute pairs trading strategy.
 """
-
+import os
+import pandas as pd
 import yfinance as yf
 
 class Portfolio:
@@ -100,6 +101,30 @@ class Portfolio:
         self.stock_a_over_time.append(self.stock_a)
         self.stock_b_over_time.append(self.stock_b)
         self.position_over_time.append(self.position)
+
+def read_csv(filename: str):
+    """
+    Read a CSV file and return a pandas dataframe object.
+
+    Parameters
+    ----------
+
+    filename : str
+        The filename to read.
+        It can be one of the following:
+        - "Price Data - CSV - Formation Period excl 2020.csv"
+        - "Price Data - CSV - Formation Period.csv"
+        - "Price Data - CSV - Full Periods.csv"
+        - "Price Data - CSV - Trading Period.csv"
+    """
+
+    current_dir = os.path.dirname(__file__)
+    data_dir = os.path.join(current_dir, '..', 'data')
+    filepath = os.path.join(data_dir, filename)
+
+    data = pd.read_csv(filepath)
+
+    return data
 
 def run_pairs_trade_strategy(stock_a_ticker: str = 'AAPL',
                              stock_b_ticker: str = 'MSFT',

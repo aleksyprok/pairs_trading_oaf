@@ -15,6 +15,7 @@ Simple code to pairs trade two stocks.
 
 # File Structure Overview
 
+- `.github/workflows`: Contains the .yml which directs the automatic testing.
 - `pairs_trading_oaf`: The main application directory.
   - `main.py`: The entry point of the application.
   - `plotting.py`: Utility functions for data visualization.

@@ -12,13 +12,15 @@ When we long stock A and short stock B, we buy position_limit worth of stock A a
 position_limit worth of stock B and vice versa when we long stock B and short stock A.
 """
 
+import matplotlib.pyplot as plt
 from pairs_trading_oaf import trading
 from pairs_trading_oaf import portfolio
 from pairs_trading_oaf import strategies
+from pairs_trading_oaf import plotting
 
 TRAINING_DATA_FNAME = "Price Data - CSV - Formation Period.csv"
 TESTING_DATA_FNAME = "Price Data - CSV - Trading Period.csv"
-POSITION_LIMIT = int(1e6) # 1 million USD
+POSITION_LIMIT = int(1e0)
 stock_pair_labels_list = [
     ("Microsoft Corporation (NasdaqGS:MSFT)", "Apple Inc. (NasdaqGS:AAPL)"),
     ("Bank of America Corporation (NYSE:BAC)", "JPMorgan Chase & Co. (NYSE:JPM)"),
@@ -35,3 +37,7 @@ for stock_pair_labels in stock_pair_labels_list:
     master_portfolio.add_pair_portfolio(pair_portfolio)
 
 trading.simulate_trading(master_portfolio)
+
+plotting.plot_pnl_over_time(master_portfolio)
+
+plt.show()

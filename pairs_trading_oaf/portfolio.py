@@ -64,6 +64,7 @@ class PairPortfolio(MasterPortfolio):
         self.shares = (0, 0) # Stores the number of shares of stock A and stock B
         # If you don't wish to store a value over time, set the corresponding list to None
         self.cash_over_time = []
+        self.dates_over_time = []
 
     def update_prices_and_date(self, date, row):
         """
@@ -80,3 +81,5 @@ class PairPortfolio(MasterPortfolio):
         """
         if self.cash_over_time is not None:
             self.cash_over_time.append(self.cash)
+        if self.dates_over_time is not None:
+            self.dates_over_time.append(self.date)

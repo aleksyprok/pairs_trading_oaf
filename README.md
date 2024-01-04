@@ -1,6 +1,6 @@
 # Introduction:
 
-In this release, our focus is to centralize the fundamental pairs trading strategies within this repository. This effort is aimed at simplifying the comparison of different strategies and to facilitate easier collaboration across our team. By bringing these strategies together in one place, we make it more convenient for team members to access, compare, and contribute to the development of these trading methods. This repository serves as a central hub for our ongoing efforts in refining and enhancing pairs trading strategies.
+In this release, our focus is to centralise the fundamental pairs trading strategies within this repository. This effort is aimed at simplifying the comparison of different strategies and to facilitate easier collaboration across our team. By bringing these strategies together in one place, we make it more convenient for team members to access, compare, and contribute to the development of these trading methods. This repository serves as a central hub for our ongoing efforts in refining and enhancing pairs trading strategies.
 
 # Installation instructions:
 

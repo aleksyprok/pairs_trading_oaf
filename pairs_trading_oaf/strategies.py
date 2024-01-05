@@ -20,6 +20,13 @@ class BaseStrategy(ABC):
         """
         Calculate the new position for the pair portfolio.
         This method needs to be implemented by all concrete strategy classes.
+
+        Returns:
+        - new_position: the new position for the pair portfolio. Which can be one of the following
+        strings:
+          - "no position"
+          - "long A short B"
+          - "long B short A"
         """
 
 class StrategyA(BaseStrategy):
@@ -58,6 +65,13 @@ class StrategyA(BaseStrategy):
     def calculate_new_position(self):
         """
         Calculate the new position for the pair portfolio.
+
+        Takes the latest prices of the stock pair and calculates the new position based on the
+        z-score of the ratio of the stock prices. The new position can be one of the following
+        strings:
+        - "no position"
+        - "long A short B"
+        - "long B short A"
         """
         new_prices = self.pair_portfolio.stock_pair_prices
         current_date = self.pair_portfolio.date

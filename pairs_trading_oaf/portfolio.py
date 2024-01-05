@@ -2,7 +2,7 @@
 This module contains the portfolio classes.
 """
 from typing import Tuple, Type
-import pairs_trading_oaf.strategies as strategies
+from pairs_trading_oaf import strategies
 
 class MasterPortfolio:
     """
@@ -62,9 +62,12 @@ class PairPortfolio(MasterPortfolio):
         self.date = None # Stores the latest date
         self.position = "no position"
         self.shares = (0, 0) # Stores the number of shares of stock A and stock B
-        # If you don't wish to store a value over time, set the corresponding list to None
         self.cash_over_time = []
         self.dates_over_time = []
+        self.position_over_time = []
+        self.shares_over_time = []
+        self.stock_pair_prices_over_time = []
+        self.portfolio_value_over_time = []
 
     def update_prices_and_date(self, date, row):
         """
@@ -79,7 +82,11 @@ class PairPortfolio(MasterPortfolio):
         """
         Update the portfolio over time.
         """
-        if self.cash_over_time is not None:
-            self.cash_over_time.append(self.cash)
-        if self.dates_over_time is not None:
-            self.dates_over_time.append(self.date)
+        self.cash_over_time.append(self.cash)
+        self.dates_over_time.append(self.date)
+        self.position_over_time.append(self.position)
+        self.shares_over_time.append(self.shares)
+        self.stock_pair_prices_over_time.append(self.stock_pair_prices)
+        self.portfolio_value_over_time.append(self.cash +
+                                              self.shares[0] * self.stock_pair_prices[0] +
+                                              self.shares[1] * self.stock_pair_prices[1])

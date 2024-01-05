@@ -13,10 +13,7 @@ position_limit worth of stock B and vice versa when we long stock B and short st
 """
 
 import matplotlib.pyplot as plt
-from pairs_trading_oaf import trading
-from pairs_trading_oaf import portfolio
-from pairs_trading_oaf import strategies
-from pairs_trading_oaf import plotting
+from pairs_trading_oaf import trading, portfolio, strategies, plotting
 
 TRAINING_DATA_FNAME = "Price Data - CSV - Formation Period.csv"
 TESTING_DATA_FNAME = "Price Data - CSV - Trading Period.csv"

@@ -1,5 +1,5 @@
 """
-Contains the rotines for trading and updating the portfolios.
+Contains the routines for trading and updating the portfolios.
 This module does not contain any strategy-specific code.
 """
 from pairs_trading_oaf import data
@@ -35,8 +35,8 @@ def close_position(pair_portfolio):
     until we own no shares of either stock.
     """
     pair_portfolio.cash = pair_portfolio.cash \
-                        - pair_portfolio.shares[0] * pair_portfolio.stock_pair_prices[0] \
-                        - pair_portfolio.shares[1] * pair_portfolio.stock_pair_prices[1]
+                        + pair_portfolio.shares[0] * pair_portfolio.stock_pair_prices[0] \
+                        + pair_portfolio.shares[1] * pair_portfolio.stock_pair_prices[1]
     pair_portfolio.shares = (0, 0)
 
 def open_position(pair_portfolio, new_position):
@@ -48,7 +48,7 @@ def open_position(pair_portfolio, new_position):
     """
     pair_portfolio.position = new_position
     if new_position == "no position":
-        return
+        close_position(pair_portfolio)
     elif new_position == "long A short B":
         pair_portfolio.shares = (+pair_portfolio.position_limit /
                                   pair_portfolio.stock_pair_prices[0],

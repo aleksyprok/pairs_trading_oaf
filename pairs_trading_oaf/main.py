@@ -13,10 +13,7 @@ position_limit worth of stock B and vice versa when we long stock B and short st
 """
 
 import matplotlib.pyplot as plt
-from pairs_trading_oaf import trading
-from pairs_trading_oaf import portfolio
-from pairs_trading_oaf import strategies
-from pairs_trading_oaf import plotting
+from pairs_trading_oaf import trading, portfolio, strategies, plotting
 
 TRAINING_DATA_FNAME = "Price Data - CSV - Formation Period.csv"
 TESTING_DATA_FNAME = "Price Data - CSV - Trading Period.csv"
@@ -25,6 +22,7 @@ stock_pair_labels_list = [
     ("Microsoft Corporation (NasdaqGS:MSFT)", "Apple Inc. (NasdaqGS:AAPL)"),
     ("Bank of America Corporation (NYSE:BAC)", "JPMorgan Chase & Co. (NYSE:JPM)"),
 ]
+StrategyClass = strategies.StrategyA
 
 master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
                                              TRAINING_DATA_FNAME,
@@ -32,7 +30,7 @@ master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
 for stock_pair_labels in stock_pair_labels_list:
     pair_portfolio = \
         portfolio.PairPortfolio(stock_pair_labels,
-                                strategies.StrategyA,
+                                StrategyClass,
                                 master_portfolio)
     master_portfolio.add_pair_portfolio(pair_portfolio)
 

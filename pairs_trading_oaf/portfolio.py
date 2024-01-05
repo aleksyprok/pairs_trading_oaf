@@ -87,6 +87,9 @@ class PairPortfolio(MasterPortfolio):
         self.position_over_time.append(self.position)
         self.shares_over_time.append(self.shares)
         self.stock_pair_prices_over_time.append(self.stock_pair_prices)
-        self.portfolio_value_over_time.append(self.cash +
-                                              self.shares[0] * self.stock_pair_prices[0] +
-                                              self.shares[1] * self.stock_pair_prices[1])
+        portfolio_value = self.cash
+        if self.stock_pair_prices[0] is not None:
+            portfolio_value += self.shares[0] * self.stock_pair_prices[0]
+        if self.stock_pair_prices[1] is not None:
+            portfolio_value += self.shares[1] * self.stock_pair_prices[1]
+        self.portfolio_value_over_time.append(portfolio_value)

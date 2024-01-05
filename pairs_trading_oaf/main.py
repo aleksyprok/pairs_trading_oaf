@@ -36,6 +36,6 @@ for stock_pair_labels in stock_pair_labels_list:
 
 trading.simulate_trading(master_portfolio)
 
-plotting.plot_pnl_over_time(master_portfolio)
+plotting.plot_portfolio_value_over_time(master_portfolio)
 
 plt.show()

@@ -43,7 +43,7 @@ def test_strategy_a_initialization(mock_read_csv):
     strategy = strategies.StrategyA(mock_pair_portfolio,
                                     window_size=60,
                                     z_threshold=1.0)
-    
+
     # Assert
     assert strategy.pair_portfolio == mock_pair_portfolio
     assert strategy.window_size == 60
@@ -87,5 +87,3 @@ def test_strategy_a_calculate_new_position(mock_read_csv):
     mock_pair_portfolio.stock_pair_prices = (1000, 1)
     new_position = strategy.calculate_new_position()
     assert new_position == 'long B short A'
-
-

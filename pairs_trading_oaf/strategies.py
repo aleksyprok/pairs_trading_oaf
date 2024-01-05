@@ -38,10 +38,11 @@ class StrategyA(BaseStrategy):
     """
 
     def __init__(self, pair_portfolio,
-                 window_size: int = 60):
+                 window_size: int = 60,
+                 z_threshold: float = 1.0):
         self.pair_portfolio = pair_portfolio
         self.window_size = window_size
-        self.z_threshold = 1
+        self.z_threshold = z_threshold
         self.window_prices = self.calculate_initial_window()
 
     def calculate_initial_window(self):

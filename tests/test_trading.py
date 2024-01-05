@@ -45,7 +45,7 @@ class MockStrategy:
 @pytest.fixture
 def master_portfolio():
     """
-    Mock master portfolio for testing purposes.
+    Master portfolio for testing purposes.
 
     We don't need to specify the training and testing data because we are mocking the
     data.read_csv function.
@@ -54,7 +54,6 @@ def master_portfolio():
     training_data_str = None
     testing_data_str = None
     mp = portfolio.MasterPortfolio(position_limit, training_data_str, testing_data_str)
-    mp.position_limit = position_limit
     return mp
 
 # pylint: disable=redefined-outer-name
@@ -142,9 +141,9 @@ def test_close_position(master_portfolio):
     """
     # Setup
     pair_portfolio = portfolio.PairPortfolio(('StockA', 'StockB'), MockStrategy, master_portfolio)
-    pair_portfolio.shares = (10, -5)  # example shares
-    pair_portfolio.stock_pair_prices = (100, 200)  # example prices
-    pair_portfolio.cash = 1000  # example initial cash
+    pair_portfolio.shares = (10, -5)
+    pair_portfolio.stock_pair_prices = (100, 200)
+    pair_portfolio.cash = 1000
 
     # Action
     trading.close_position(pair_portfolio)

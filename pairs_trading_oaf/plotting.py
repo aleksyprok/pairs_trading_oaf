@@ -40,7 +40,8 @@ def plot_portfolio_value_over_time(master_portfolio):
 
     fig, ax = plt.subplots()
 
-    ax.plot(master_portfolio.pair_portfolios[0].dates_over_time, master_portfolio.average_portfolio_value_over_time())
+    ax.plot(master_portfolio.pair_portfolios[0].dates_over_time,
+            master_portfolio.average_portfolio_value_over_time())
     ax.set_ylabel('Average portfolio value [USD] (Position limit = $' +
                   f'{int(master_portfolio.position_limit):d})')
     plt.xticks(rotation=45)

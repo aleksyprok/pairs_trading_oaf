@@ -26,7 +26,7 @@ In this release, our focus is to centralise the fundamental pairs trading strate
                      Try to keep strategy specifc code to this module 
                      and everything else in the other modules.
   - `trading.py`: Core trading logic and functions.
-- `plots`: Contains image of the results from running main.py.
+- `plots`: Contains images of the results from running main.py.
 - `tests`: Contains tests which will be automatically run using pytest.
 - `.gitignore`: Specifies files to be ignored in Git version control.
 - `README.md`: The file you are currently reading, with instructions and information about this project.

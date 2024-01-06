@@ -22,9 +22,9 @@ In this release, our focus is to centralise the fundamental pairs trading strate
   - `main.py`: The entry point of the application.
   - `plotting.py`: Utility functions for data visualization.
   - `potfolio.py`: Module for portfolio classes
-  - `strategies.py`: Section where new strategies can be added.
+  - `strategies.py`: Where new strategies can be added.
                      Try to keep strategy specifc code to this module 
-                     and everything else goes in the other modules.
+                     and everything else in the other modules.
   - `trading.py`: Core trading logic and functions.    
 - `tests`: Contains tests which will be automatically run using pytest.
 - `.gitignore`: Specifies files to be ignored in Git version control.

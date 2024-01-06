@@ -33,11 +33,9 @@ def plot_portfolio_value_over_time(master_portfolio):
         ax.set_title('Portfolio value over time for\n' +
                      f'Stock pair: {stock_a_label}, {stock_b_label}\n' +
                      f'Strategy: {pair_portfolio.strategy.__class__.__name__}')
-        plot_dir = os.path.join(plots_dir, f'{pair_portfolio.strategy.__class__.__name__}')
-        plot_dir = os.path.join(plot_dir, stock_a_label +
-                                '_' + stock_b_label)
-        os.makedirs(plot_dir, exist_ok=True)
-        fname = os.path.join(plot_dir, 'portfolio_value_over_time.png')
+        fname = os.path.join(plots_dir, 'portfolio_value_over_time_' +
+                             f'{pair_portfolio.strategy.__class__.__name__}' + '_' +
+                             stock_a_label + '_' + stock_b_label + '.png')
         fig.savefig(fname, dpi=300, bbox_inches='tight')
 
     fig, ax = plt.subplots()

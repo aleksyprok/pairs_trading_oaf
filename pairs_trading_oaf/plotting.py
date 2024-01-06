@@ -2,116 +2,48 @@
 Functions to plot trading data.
 """
 
+import os
 import matplotlib.pyplot as plt
-import numpy as np
-import yfinance as yf
 
-def plot_price_series(stock_a_ticker: str, stock_b_ticker: str,
-                      training_start_date: str, training_end_date: str,
-                      testing_start_date: str, testing_end_date: str):
+def plot_portfolio_value_over_time(master_portfolio):
     """
-    Plots the price series for two tickers.
+    Plots the profit and loss of the portfolio over time for each pair
+    in the master portfolio over the entire trading period.
     """
-    stock_a_prices_training = yf.download(stock_a_ticker,
-                                          start=training_start_date,
-                                          end=training_end_date)['Close']
-    stock_b_prices_training = yf.download(stock_b_ticker,
-                                          start=training_start_date,
-                                          end=training_end_date)['Close']
-    stock_a_prices_testing = yf.download(stock_a_ticker,
-                                         start=testing_start_date,
-                                         end=testing_end_date)['Close']
-    stock_b_prices_testing = yf.download(stock_b_ticker,
-                                         start=testing_start_date,
-                                         end=testing_end_date)['Close']
+    current_dir = os.path.dirname(__file__)
+    plots_dir = os.path.join(current_dir, '..', 'plots')
+    os.makedirs(plots_dir, exist_ok=True)
+
+    for pair_portfolio in master_portfolio.pair_portfolios:
+
+        fig, ax = plt.subplots()
+        fig_size = fig.get_size_inches()
+        fig.set_size_inches(fig_size[0], fig_size[1])
+
+        # Extract stock label text bettwen : and )
+        stock_a_label = pair_portfolio.stock_pair_labels[0]
+        stock_a_label = stock_a_label[stock_a_label.find(':')+1:stock_a_label.find(')')]
+        stock_b_label = pair_portfolio.stock_pair_labels[1]
+        stock_b_label = stock_b_label[stock_b_label.find(':')+1:stock_b_label.find(')')]
+
+        ax.plot(pair_portfolio.dates_over_time, pair_portfolio.portfolio_value_over_time)
+        ax.set_ylabel('Portfolio value [USD] (Position limit = $' +
+                      f'{int(pair_portfolio.position_limit):d})')
+        plt.xticks(rotation=45)
+        ax.set_title('Portfolio value over time for\n' +
+                     f'Stock pair: {stock_a_label}, {stock_b_label}\n' +
+                     f'Strategy: {pair_portfolio.strategy.__class__.__name__}')
+        fname = os.path.join(plots_dir, 'portfolio_value_over_time_' +
+                             f'{pair_portfolio.strategy.__class__.__name__}' + '_' +
+                             stock_a_label + '_' + stock_b_label + '.png')
+        fig.savefig(fname, dpi=300, bbox_inches='tight')
 
     fig, ax = plt.subplots()
-    fig_size = fig.get_size_inches()
-    fig.set_size_inches(fig_size[0], fig_size[1])
 
-    ax.plot(stock_a_prices_training.index, stock_a_prices_training,
-            label=f'{stock_a_ticker} Training')
-    ax.plot(stock_b_prices_training.index, stock_b_prices_training,
-            label=f'{stock_b_ticker} Training')
-    ax.plot(stock_a_prices_testing.index, stock_a_prices_testing,
-            label=f'{stock_a_ticker} Testing')
-    ax.plot(stock_b_prices_testing.index, stock_b_prices_testing,
-            label=f'{stock_b_ticker} Testing')
-
-    ax.set_ylabel('Price')
-    ax.legend()
+    ax.plot(master_portfolio.pair_portfolios[0].dates_over_time, master_portfolio.average_portfolio_value_over_time())
+    ax.set_ylabel('Average portfolio value [USD] (Position limit = $' +
+                  f'{int(master_portfolio.position_limit):d})')
     plt.xticks(rotation=45)
-
-def plot_ratio_series(stock_a_ticker: str, stock_b_ticker: str,
-                      training_start_date: str, training_end_date: str,
-                      testing_start_date: str, testing_end_date: str,
-                      long_stock_a_threshold=None, long_stock_b_threshold=None):
-    """
-    Plots the ratio series for two tickers.
-    """
-    stock_a_prices_training = yf.download(stock_a_ticker,
-                                          start=training_start_date,
-                                          end=training_end_date)['Close']
-    stock_b_prices_training = yf.download(stock_b_ticker,
-                                          start=training_start_date,
-                                          end=training_end_date)['Close']
-    stock_a_prices_testing = yf.download(stock_a_ticker,
-                                         start=testing_start_date,
-                                         end=testing_end_date)['Close']
-    stock_b_prices_testing = yf.download(stock_b_ticker,
-                                         start=testing_start_date,
-                                         end=testing_end_date)['Close']
-
-    ratio_training = stock_a_prices_training / stock_b_prices_training
-    ratio_testing = stock_a_prices_testing / stock_b_prices_testing
-
-    fig, ax = plt.subplots()
-    fig_size = fig.get_size_inches()
-    fig.set_size_inches(fig_size[0], fig_size[1])
-
-    ax.plot(ratio_training.index, ratio_training, label='Training')
-    ax.plot(ratio_testing.index, ratio_testing, label='Testing')
-
-    if long_stock_a_threshold is not None:
-        ax.axhline(long_stock_a_threshold, color='r', linestyle='--',
-                   label=f'Long {stock_a_ticker} Threshold')
-    if long_stock_b_threshold is not None:
-        ax.axhline(long_stock_b_threshold, color='g', linestyle='--',
-                   label=f'Long {stock_b_ticker} Threshold')
-
-    ax.set_ylabel(f'Ratio of {stock_a_ticker} over {stock_b_ticker} prices')
-    ax.legend()
-    plt.xticks(rotation=45)
-
-def plot_pnl(portfolio):
-    """
-    Plots the profit and loss of the portfolio over time.
-    """
-
-    stock_a_prices = yf.download(portfolio.stock_a_ticker,
-                                 start=portfolio.trading_start_date,
-                                 end=portfolio.trading_end_date)['Close']
-    stock_b_prices = yf.download(portfolio.stock_b_ticker,
-                                 start=portfolio.trading_start_date,
-                                 end=portfolio.trading_end_date)['Close']
-
-    fig, ax = plt.subplots()
-    fig_size = fig.get_size_inches()
-    fig.set_size_inches(fig_size[0], fig_size[1])
-    stock_a_portfolio_value = np.array(portfolio.stock_a_over_time) * np.array(stock_a_prices)
-    stock_b_portfolio_value = np.array(portfolio.stock_b_over_time) * np.array(stock_b_prices)
-    total_portfolio_value = portfolio.cash_over_time + stock_a_portfolio_value \
-                          + stock_b_portfolio_value
-
-    ax.plot(stock_a_prices.index, portfolio.cash_over_time, label='Cash')
-    ax.plot(stock_a_prices.index,
-            stock_a_portfolio_value,
-            label='Stock A Holdings * Stock A Price')
-    ax.plot(stock_a_prices.index,
-            stock_b_portfolio_value,
-            label='Stock B Holdings * Stock B Price')
-    ax.plot(stock_a_prices.index, total_portfolio_value,
-            label='Total')
-    ax.set_ylabel('Value')
-    ax.legend()
-    plt.xticks(rotation=45)
+    ax.set_title('Average portfolio value over time')
+    fname = os.path.join(plots_dir, 'average_portfolio_value_over_time.png')
+    fig.savefig(fname, dpi=300, bbox_inches='tight')

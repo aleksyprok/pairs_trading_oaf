@@ -18,11 +18,15 @@ In this release, our focus is to centralise the fundamental pairs trading strate
 
 - `.github/workflows`: Contains the .yml which directs the automatic testing.
 - `pairs_trading_oaf`: The main application directory.
+  - `data.py`: Functions to read the input data files.
   - `main.py`: The entry point of the application.
   - `plotting.py`: Utility functions for data visualization.
-  - `trading.py`: Core trading logic and functions.
-- `tests`: Test cases for the application.
-  - `test_trading.py`: Tests for the trading module.
+  - `potfolio.py`: Module for portfolio classes
+  - `strategies.py`: Where new strategies can be added.
+                     Try to keep strategy specifc code to this module 
+                     and everything else in the other modules.
+  - `trading.py`: Core trading logic and functions.    
+- `tests`: Contains tests which will be automatically run using pytest.
 - `.gitignore`: Specifies files to be ignored in Git version control.
 - `README.md`: The file you are currently reading, with instructions and information about this project.
 - `requirements.txt`: Lists all Python dependencies.

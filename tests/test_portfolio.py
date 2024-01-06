@@ -1,7 +1,7 @@
 """
 Test the routines in the portfolio module.
 """
-
+import pandas as pd
 from pairs_trading_oaf import portfolio
 from pairs_trading_oaf import strategies
 
@@ -39,6 +39,34 @@ def test_add_pair_portfolio():
     pair_portfolio = portfolio.PairPortfolio(STOCK_PAIR_LABELS, MockStrategy, master_portfolio)
     master_portfolio.add_pair_portfolio(pair_portfolio)
     assert pair_portfolio in master_portfolio.pair_portfolios
+
+def test_average_portfolio_value_over_time():
+    """
+    Test the average_portfolio_value_over_time method of the MasterPortfolio class.
+    """
+    # Arrange
+    master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT, TRAINING_DATA, TESTING_DATA)
+
+    # Create three identical pair portfolios
+    for _ in range(3):
+        pair_portfolio = portfolio.PairPortfolio(STOCK_PAIR_LABELS, MockStrategy, master_portfolio)
+        master_portfolio.add_pair_portfolio(pair_portfolio)
+
+        for date in pd.date_range(start='2021-01-01', periods=5, freq='D'):
+            test_row = {STOCK_PAIR_LABELS[0]: 100, STOCK_PAIR_LABELS[1]: 200}
+            pair_portfolio.update_prices_and_date(str(date), test_row)
+            pair_portfolio.cash = 1000 + date.day
+            pair_portfolio.update_over_time_values()
+
+    # Calculate expected average portfolio value over time
+    expected_average_value = [1001, 1002, 1003, 1004, 1005]
+
+    # Act
+    actual_average_value = master_portfolio.average_portfolio_value_over_time()
+
+    # Assert
+    for actual, expected in zip(actual_average_value, expected_average_value):
+        assert actual == expected
 
 def test_pair_portfolio_initialization():
     """

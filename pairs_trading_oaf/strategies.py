@@ -4,6 +4,22 @@ to each strategy in this module and code that is common to all strategies in the
 
 When adding a new strategy, e.g. StrategyX make sure to use class StrategyX(BaseStrategy):
 to ensure you are inheriting from the abstract base class.
+
+The stategy class simply needs to calculate the position for the pair portfolio
+given the latest prices of the stock pair. The position can be one of the following strings:
+- "no position"
+- "long A short B"
+- "long B short A"
+
+A new strategy should follow this format:
+class StrategyX(BaseStrategy):
+    def __init__(self, pair_portfolio, <other arguments>):
+        self.pair_portfolio = pair_portfolio # Need to link the strategy to a pair portfolio
+        <other initialisation code>
+
+    def calculate_new_position(self):
+        <code to calculate the new position>
+        return new_position
 """
 
 from abc import ABC, abstractmethod

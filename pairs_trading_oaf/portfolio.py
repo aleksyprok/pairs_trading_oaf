@@ -2,6 +2,7 @@
 This module contains the portfolio classes.
 """
 from typing import Tuple, Type
+import numpy as np
 from pairs_trading_oaf import strategies
 
 class MasterPortfolio:
@@ -20,8 +21,6 @@ class MasterPortfolio:
         self.position_limit = position_limit
         self.training_data_str = training_data_str
         self.testing_data_str = testing_data_str
-        self.total_pnl = 0
-        self.total_pnl_over_time = []
         self.pair_portfolios = []
 
     def add_pair_portfolio(self, pair_portfolio):
@@ -31,6 +30,17 @@ class MasterPortfolio:
         if not isinstance(pair_portfolio, PairPortfolio):
             raise TypeError("pair_portfolio must be an instance of PairPortfolio")
         self.pair_portfolios.append(pair_portfolio)
+
+    def average_portfolio_value_over_time(self):
+        """
+        Calculate the average value of the portfolio over time
+        across all the pair portfolios.
+        """
+        total_portfolio_value_over_time = \
+            np.zeros(len(self.pair_portfolios[0].portfolio_value_over_time))
+        for pair_portfolio in self.pair_portfolios:
+            total_portfolio_value_over_time += np.array(pair_portfolio.portfolio_value_over_time)
+        return total_portfolio_value_over_time / len(self.pair_portfolios)
 
 class PairPortfolio(MasterPortfolio):
     """

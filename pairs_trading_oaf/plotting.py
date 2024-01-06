@@ -37,5 +37,15 @@ def plot_portfolio_value_over_time(master_portfolio):
         plot_dir = os.path.join(plot_dir, stock_a_label +
                                 '_' + stock_b_label)
         os.makedirs(plot_dir, exist_ok=True)
-        fig.savefig(plot_dir + '/_portfolio_value_over_time.png',
-                    dpi=300, bbox_inches='tight')
+        fname = os.path.join(plot_dir, 'portfolio_value_over_time.png')
+        fig.savefig(fname, dpi=300, bbox_inches='tight')
+
+    fig, ax = plt.subplots()
+
+    ax.plot(master_portfolio.pair_portfolios[0].dates_over_time, master_portfolio.average_portfolio_value_over_time())
+    ax.set_ylabel('Average portfolio value [USD] (Position limit = $' +
+                  f'{int(master_portfolio.position_limit):d})')
+    plt.xticks(rotation=45)
+    ax.set_title('Average portfolio value over time')
+    fname = os.path.join(plots_dir, 'average_portfolio_value_over_time.png')
+    fig.savefig(fname, dpi=300, bbox_inches='tight')

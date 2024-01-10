@@ -87,3 +87,55 @@ def test_strategy_a_calculate_new_position(mock_read_csv):
     mock_pair_portfolio.stock_pair_prices = (1000, 1)
     new_position = strategy.calculate_new_position()
     assert new_position == 'long B short A'
+
+@patch('pairs_trading_oaf.data.read_csv')
+def test_strategy_b_initialization(mock_read_csv):
+    """
+    This test checks that the StrategyB class is initialized correctly.
+    """
+
+    # Arrange
+
+    # Create a mock pair portfolio object
+    mock_pair_portfolio = Mock()
+    mock_pair_portfolio.stock_pair_labels = ('StockA', 'StockB')
+
+    # Create mock data for the initial window
+    mock_data = pd.DataFrame({'Date': pd.date_range(start='2021-01-01', periods=100, freq='D'),
+                              'StockA': np.random.rand(100) * 100,
+                              'StockB': np.random.rand(100) * 200
+                            })
+    mock_data.index = mock_data['Date']
+    mock_read_csv.return_value = mock_data
+
+    # Act
+    strategy = strategies.StrategyB(mock_pair_portfolio)
+
+    # Assert
+    assert strategy.pair_portfolio == mock_pair_portfolio
+    assert strategy.fast_window_size == 12
+    assert strategy.slow_window_size == 26
+    assert strategy.signal_window_size == 9
+    max_window_size = np.max([strategy.fast_window_size, strategy.slow_window_size, strategy.signal_window_size])
+    assert strategy.window_prices.equals(mock_data[['StockA', 'StockB']].tail(max_window_size))
+
+def test_calc_macd_signal():
+    # Arrange
+    # Create a series of stock prices (ratios)
+    stock_a_prices = np.linspace(100, 200, 100)
+    stock_b_prices = np.linspace(200, 300, 100)
+    ratio = pd.Series(stock_a_prices / stock_b_prices)
+
+    # Define the window sizes directly in the test
+    fast_window_size = 12
+    slow_window_size = 26
+    signal_window_size = 9
+
+    # Act
+    macd, signal = strategies.StrategyB.calc_macd_signal(ratio, slow_window_size, fast_window_size, signal_window_size) #asdadasdasdhfhfghfgasdasdassssssssss
+
+    # Assert
+    assert macd is not None
+    assert signal is not None
+    assert len(macd) == len(ratio)
+    assert len(signal) == len(ratio)

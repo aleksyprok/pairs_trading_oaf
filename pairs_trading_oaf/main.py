@@ -53,4 +53,4 @@ plotting.plot_portfolio_value_over_time(master_portfolio)
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")
 
-plt.show()
+# plt.show()

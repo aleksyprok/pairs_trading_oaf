@@ -58,9 +58,9 @@ class BaseStrategy(ABC):
         - window_data: a pandas DataFrame containing the stock A and stock B prices as columns
         and the dates as the index.
         """
-        df_train = data.read_csv(self.pair_portfolio.training_data_str)
+        df_train = data.read_csv(self.pair_portfolio.training_data_str) # pylint: disable=no-member
         df_train = df_train.tail(window_size)
-        window_prices = df_train[list(self.pair_portfolio.stock_pair_labels)]
+        window_prices = df_train[list(self.pair_portfolio.stock_pair_labels)] # pylint: disable=no-member
 
         return window_prices
 
@@ -109,7 +109,7 @@ class StrategyA(BaseStrategy):
         elif z_score > self.z_threshold:
             return 'long B short A'
         else:
-            return "no position"
+            return self.pair_portfolio.position
 
 class StrategyB(BaseStrategy):
     """
@@ -134,19 +134,23 @@ class StrategyB(BaseStrategy):
         self.fast_window_size = fast_window_size
         self.slow_window_size = slow_window_size
         self.signal_window_size = signal_window_size
-        self.window_prices = self.calculate_initial_window(np.max([self.fast_window_size,
-                                                                   self.slow_window_size,
-                                                                   self.signal_window_size]))
-        
+        max_window_size = np.max([self.fast_window_size,
+                                  self.slow_window_size,
+                                  self.signal_window_size])
+        # Set the window size to be the maximum window size plus 50
+        # This is to ensure that we have enough data to calculate the MACD and signal line
+        window_size = max_window_size + 50
+        self.window_prices = self.calculate_initial_window(window_size)
+
     @staticmethod
     def calc_macd_signal(ratio, slow_window_size, fast_window_size, signal_window_size):
-        fast_ema = ratio.ewm(span=fast_window_size, adjust=False)
-        fast_ema = fast_ema.mean()
-        slow_ema = ratio.ewm(span=slow_window_size, adjust=False)
-        slow_ema = slow_ema.mean()
+        """
+        Calculate the MACD and signal line for a given stock pair ratio.
+        """
+        fast_ema = ratio.ewm(span=fast_window_size, adjust=False).mean()
+        slow_ema = ratio.ewm(span=slow_window_size, adjust=False).mean()
         macd = fast_ema - slow_ema
-        signal = macd.ewm(span=signal_window_size, adjust=False)
-        signal = signal.mean()
+        signal = macd.ewm(span=signal_window_size, adjust=False).mean()
         return macd, signal
 
     def calculate_new_position(self):
@@ -168,3 +172,16 @@ class StrategyB(BaseStrategy):
         self.window_prices = pd.concat([self.window_prices, new_data])
         self.window_prices = self.window_prices.iloc[1:]
         ratio = self.window_prices[stock_pair_labels[0]] / self.window_prices[stock_pair_labels[1]]
+        macd, signal = self.calc_macd_signal(ratio,
+                                             self.slow_window_size,
+                                             self.fast_window_size,
+                                             self.signal_window_size)
+        if macd.iloc[-1] > signal.iloc[-1] and macd.iloc[-2] < signal.iloc[-2]:
+            # MACD crossed above signal line so long stock A and short stock B
+            return 'long A short B'
+        elif macd.iloc[-1] < signal.iloc[-1] and macd.iloc[-2] > signal.iloc[-2]:
+            # MACD crossed below signal line so long stock B and short stock A
+            return 'long B short A'
+        else:
+            # Don't change the position if the MACD and signal line do not cross
+            return self.pair_portfolio.position

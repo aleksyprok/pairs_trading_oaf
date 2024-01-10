@@ -41,6 +41,17 @@ class MasterPortfolio:
         for pair_portfolio in self.pair_portfolios:
             total_portfolio_value_over_time += np.array(pair_portfolio.portfolio_value_over_time)
         return total_portfolio_value_over_time / len(self.pair_portfolios)
+    
+    def average_cash_over_time(self):
+        """
+        Calculate the average cash over time
+        across all the pair portfolios.
+        """
+        total_cash_over_time = \
+            np.zeros(len(self.pair_portfolios[0].cash_over_time))
+        for pair_portfolio in self.pair_portfolios:
+            total_cash_over_time += np.array(pair_portfolio.cash_over_time)
+        return total_cash_over_time / len(self.pair_portfolios)
 
 class PairPortfolio(MasterPortfolio):
     """

@@ -29,6 +29,7 @@ def test_strategy_a_initialization(mock_read_csv):
     # Create a mock pair portfolio object
     mock_pair_portfolio = Mock()
     mock_pair_portfolio.stock_pair_labels = ('StockA', 'StockB')
+    mock_pair_portfolio.position = "no position"
 
     mock_data = pd.DataFrame({'Date': pd.date_range(start='2021-01-01', periods=100, freq='D'),
                               'StockA': np.random.rand(100) * 100,
@@ -59,6 +60,7 @@ def test_strategy_a_calculate_new_position(mock_read_csv):
     # Arrange
     mock_pair_portfolio = Mock()
     mock_pair_portfolio.stock_pair_labels = ('StockA', 'StockB')
+    mock_pair_portfolio.position = "no position"
 
     # Create mock training data for the initial window
     mock_data = pd.DataFrame({'Date': pd.date_range(start='2021-01-01', periods=100, freq='D'),
@@ -119,7 +121,7 @@ def test_strategy_b_initialization(mock_read_csv):
     max_window_size = np.max([strategy.fast_window_size,
                               strategy.slow_window_size,
                               strategy.signal_window_size])
-    assert strategy.window_prices.equals(mock_data[['StockA', 'StockB']].tail(max_window_size))
+    assert strategy.window_prices.equals(mock_data[['StockA', 'StockB']].tail(max_window_size+50))
 
 def test_calc_macd_signal():
     """

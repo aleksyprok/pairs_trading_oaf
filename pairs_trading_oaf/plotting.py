@@ -37,9 +37,9 @@ def plot_portfolio_value_over_time(master_portfolio,
         fname = os.path.join(plots_dir, 'portfolio_value_over_time_' +
                              f'{pair_portfolio.strategy.__class__.__name__}' + '_' +
                              stock_a_label + '_' + stock_b_label + '.png')
-        
+
         if plot_cash:
-        
+
             fig, ax = plt.subplots()
             ax.plot(pair_portfolio.dates_over_time, pair_portfolio.cash_over_time)
             ax.set_ylabel('Cash [USD] (Position limit = $' +

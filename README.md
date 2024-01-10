@@ -5,10 +5,10 @@ In this release, our focus is to centralise the fundamental pairs trading strate
 # Installation instructions:
 
 1. Install Python3.9 or greater.
-2. Create a virtual environment with e.g. `python -m venv venv`
+2. Create a virtual environment with e.g. `python -m venv venv`.
 3. Activte the environment.
-4. Install packages in `requirements.txt` with e.g. `pip install -r requirements.txt`
-5. Install the repo with `pip install -e .`
+4. Install packages in `requirements.txt` with e.g. `pip install -r requirements.txt`.
+5. Install the repo with `pip install -e .`.
 
 # Executing code:
 

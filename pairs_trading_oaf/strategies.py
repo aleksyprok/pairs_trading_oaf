@@ -153,6 +153,17 @@ class StrategyB(BaseStrategy):
         signal = macd.ewm(span=signal_window_size, adjust=False).mean()
         return macd, signal
 
+    @staticmethod
+    def calc_macd_new_signal(ratio, slow_window_size, fast_window_size, signal_window_size):
+        """
+        Calculate the MACD and signal line for a given stock pair ratio.
+        """
+        fast_ema = ratio.ewm(span=fast_window_size, adjust=False).mean()
+        slow_ema = ratio.ewm(span=slow_window_size, adjust=False).mean()
+        macd = fast_ema - slow_ema
+        signal = macd.ewm(span=signal_window_size, adjust=False).mean()
+        return macd, signal
+
     def calculate_new_position(self):
         """
         Calculate the new position for the pair portfolio.
@@ -185,3 +196,107 @@ class StrategyB(BaseStrategy):
         else:
             # Don't change the position if the MACD and signal line do not cross
             return self.pair_portfolio.position
+
+class StrategyB2(BaseStrategy):
+    """
+    Moving Average Convergence Divergence (MACD) strategy.
+
+    The MACD strategy is a trend following strategy that uses the difference between
+    two moving averages of the stock prices to determine the position.
+
+    The MACD line is the difference between the 26-day and 12-day exponential moving averages
+    of the stock prices. The signal line is the 9-day exponential moving average of the MACD line.
+
+    The position is long stock A and short stock B if the MACD crosses above the signal line.
+
+    The position is long stock B and short stock A if the MACD crosses below the signal line.
+    """
+
+    class MACDVals:
+        """
+        Class to store the MACD and signal values as well as the exponential moving averages
+        of the ratio of the stock prices.
+        """
+        def __init__(self, fast_period: int = 12, slow_period: int = 26, signal_period: int = 9):
+            self.fast_period = fast_period
+            self.slow_period = slow_period
+            self.signal_period = signal_period
+            self.fast_ewma = 0.0
+            self.slow_ewma = 0.0
+            self.macd = 0.0
+            self.signal = 0.0
+
+    def __init__(self, pair_portfolio,
+                 fast_period: int = 12,
+                 slow_period: int = 26,
+                 signal_period: int = 9,
+                 training_period: int = 100):
+        self.pair_portfolio = pair_portfolio
+        self.macd = self.MACDVals(fast_period, slow_period, signal_period)
+        self.calc_initial_macd_signal(training_period)
+
+    def calc_macd_signal(self, ratio):
+        """
+        Update the MACD and signal values using the latest ratio.
+
+        Returns:
+        - macd: the latest MACD value
+        - signal: the latest signal value
+        Overwrites the stored values of the fast and slow exponential moving averages
+        of the price ratios.
+        """
+        alpha_fast = 2 / (self.macd.fast_period + 1)
+        alpha_slow = 2 / (self.macd.slow_period + 1)
+        alpha_signal = 2 / (self.macd.signal_period + 1)
+        self.macd.fast_ewma = alpha_fast * ratio + (1 - alpha_fast) * self.macd.fast_ewma
+        self.macd.slow_ewma = alpha_slow * ratio + (1 - alpha_slow) * self.macd.slow_ewma
+        macd = self.macd.fast_ewma - self.macd.slow_ewma
+        signal = alpha_signal * macd + (1 - alpha_signal) * self.macd.signal
+        return macd, signal
+
+    def calc_initial_macd_signal(self, training_period):
+        """
+        Calculate the initial MACD and signal values using the training data.
+        """
+        df_train = data.read_csv(self.pair_portfolio.training_data_str)
+        df_train = df_train.tail(training_period)
+        ratios = df_train[self.pair_portfolio.stock_pair_labels[0]] \
+               / df_train[self.pair_portfolio.stock_pair_labels[1]]
+        for ratio in ratios:
+            new_macd, new_signal = self.calc_macd_signal(ratio)
+            self.macd.macd = new_macd
+            self.macd.signal = new_signal
+
+    def calculate_new_position(self):
+        """
+        Calculate the new position for the pair portfolio.
+
+        Takes the latest prices of the stock pair and calculates the new position based on the
+        MACD and signal line. The new position can be one of the following strings:
+        - "no position"
+        - "long A short B"
+        - "long B short A"
+        """
+        new_prices = self.pair_portfolio.stock_pair_prices
+        ratio = new_prices[0] / new_prices[1]
+        new_macd, new_signal = self.calc_macd_signal(ratio)
+        old_macd = self.macd.macd
+        old_signal = self.macd.signal
+
+        if new_macd > new_signal and old_macd < old_signal:
+            # MACD crossed above signal line so long stock A and short stock B
+            # position = 'long A short B'
+            position = 'long B short A'
+        elif new_macd < new_signal and old_macd > old_signal:
+            # MACD crossed below signal line so long stock B and short stock A
+            # position = 'long B short A'
+            position = 'long A short B'
+        else:
+            # Don't change the position if the MACD and signal line do not cross
+            position = self.pair_portfolio.position
+
+        # Update the stored MACD and signal values ready for the next day
+        self.macd.macd = new_macd
+        self.macd.signal = new_signal
+
+        return position

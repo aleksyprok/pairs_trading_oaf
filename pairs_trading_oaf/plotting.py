@@ -37,6 +37,7 @@ def plot_portfolio_value_over_time(master_portfolio,
         fname = os.path.join(plots_dir, 'portfolio_value_over_time_' +
                              f'{pair_portfolio.strategy.__class__.__name__}' + '_' +
                              stock_a_label + '_' + stock_b_label + '.png')
+        fig.savefig(fname, dpi=300, bbox_inches='tight')
 
         if plot_cash:
 
@@ -51,7 +52,6 @@ def plot_portfolio_value_over_time(master_portfolio,
             fname = os.path.join(plots_dir, 'cash_value_over_time_' +
                                 f'{pair_portfolio.strategy.__class__.__name__}' + '_' +
                                 stock_a_label + '_' + stock_b_label + '.png')
-
             fig.savefig(fname, dpi=300, bbox_inches='tight')
 
     fig, ax = plt.subplots()

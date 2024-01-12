@@ -13,7 +13,7 @@ position_limit worth of stock B and vice versa when we long stock B and short st
 """
 
 import time
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from pairs_trading_oaf import trading, portfolio, strategies, plotting
 
 tic = time.perf_counter()

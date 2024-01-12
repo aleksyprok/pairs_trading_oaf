@@ -221,10 +221,10 @@ class StrategyB2(BaseStrategy):
             self.fast_period = fast_period
             self.slow_period = slow_period
             self.signal_period = signal_period
-            self.fast_ewma = 0.0
-            self.slow_ewma = 0.0
-            self.macd = 0.0
-            self.signal = 0.0
+            self.fast_ewma = None
+            self.slow_ewma = None
+            self.macd = None
+            self.signal = None
 
     def __init__(self, pair_portfolio,
                  fast_period: int = 12,
@@ -262,10 +262,16 @@ class StrategyB2(BaseStrategy):
         df_train = df_train.tail(training_period)
         ratios = df_train[self.pair_portfolio.stock_pair_labels[0]] \
                / df_train[self.pair_portfolio.stock_pair_labels[1]]
-        for ratio in ratios:
-            new_macd, new_signal = self.calc_macd_signal(ratio)
-            self.macd.macd = new_macd
-            self.macd.signal = new_signal
+        for i, ratio in enumerate(ratios):
+            if i == 0:
+                self.macd.fast_ewma = ratio
+                self.macd.slow_ewma = ratio
+                self.macd.macd = 0
+                self.macd.signal = 0
+            else:
+                new_macd, new_signal = self.calc_macd_signal(ratio)
+                self.macd.macd = new_macd
+                self.macd.signal = new_signal
 
     def calculate_new_position(self):
         """
@@ -285,12 +291,10 @@ class StrategyB2(BaseStrategy):
 
         if new_macd > new_signal and old_macd < old_signal:
             # MACD crossed above signal line so long stock A and short stock B
-            # position = 'long A short B'
-            position = 'long B short A'
+            position = 'long A short B'
         elif new_macd < new_signal and old_macd > old_signal:
             # MACD crossed below signal line so long stock B and short stock A
-            # position = 'long B short A'
-            position = 'long A short B'
+            position = 'long B short A'
         else:
             # Don't change the position if the MACD and signal line do not cross
             position = self.pair_portfolio.position

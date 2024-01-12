@@ -100,7 +100,7 @@ class StrategyA(BaseStrategy):
         self.window_prices = self.window_prices.iloc[1:]
         ratio = self.window_prices[stock_pair_labels[0]] / self.window_prices[stock_pair_labels[1]]
         mean = ratio.mean()
-        std = ratio.std()
+        std = max([ratio.std(), 1e-8])
         z_score = (ratio.iloc[-1] - mean) / std
 
         if z_score < -self.z_threshold:

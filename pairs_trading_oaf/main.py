@@ -34,7 +34,7 @@ stock_pair_labels_list = [
     ("Caterpillar Inc. (NYSE:CAT)", "Deere & Company (NYSE:DE)"),
     ("Wells Fargo & Company (NYSE:WFC)", "Citigroup Inc. (NYSE:C)"),
 ]
-StrategyClass = strategies.StrategyB2
+StrategyClass = strategies.StrategyB
 
 master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
                                              TRAINING_DATA_FNAME,

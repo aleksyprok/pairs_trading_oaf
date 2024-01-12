@@ -38,6 +38,7 @@ def plot_portfolio_value_over_time(master_portfolio,
                              f'{pair_portfolio.strategy.__class__.__name__}' + '_' +
                              stock_a_label + '_' + stock_b_label + '.png')
         fig.savefig(fname, dpi=300, bbox_inches='tight')
+        plt.close()
 
         if plot_cash:
 
@@ -53,6 +54,7 @@ def plot_portfolio_value_over_time(master_portfolio,
                                 f'{pair_portfolio.strategy.__class__.__name__}' + '_' +
                                 stock_a_label + '_' + stock_b_label + '.png')
             fig.savefig(fname, dpi=300, bbox_inches='tight')
+            plt.close()
 
     fig, ax = plt.subplots()
 
@@ -64,6 +66,7 @@ def plot_portfolio_value_over_time(master_portfolio,
     ax.set_title('Average portfolio value over time')
     fname = os.path.join(plots_dir, 'average_portfolio_value_over_time.png')
     fig.savefig(fname, dpi=300, bbox_inches='tight')
+    plt.close()
 
     if plot_cash:
         fig, ax = plt.subplots()
@@ -75,3 +78,4 @@ def plot_portfolio_value_over_time(master_portfolio,
         ax.set_title('Average cash over time')
         fname = os.path.join(plots_dir, 'average_cash_over_time.png')
         fig.savefig(fname, dpi=300, bbox_inches='tight')
+        plt.close()

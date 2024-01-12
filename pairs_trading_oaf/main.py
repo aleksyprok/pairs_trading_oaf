@@ -13,7 +13,6 @@ position_limit worth of stock B and vice versa when we long stock B and short st
 """
 
 import time
-# import matplotlib.pyplot as plt
 from pairs_trading_oaf import trading, portfolio, strategies, plotting
 
 tic = time.perf_counter()
@@ -48,11 +47,8 @@ for StrategyClass in [strategies.StrategyA, strategies.StrategyB]:
 
 trading.simulate_trading(master_portfolio)
 
-# plotting.plot_portfolio_value_over_time(master_portfolio)
 plotting.plot_average_values_over_time(master_portfolio)
 plotting.plot_values_over_time(master_portfolio)
 
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")
-
-# plt.show()

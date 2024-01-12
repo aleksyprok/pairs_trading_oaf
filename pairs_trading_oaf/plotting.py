@@ -4,6 +4,7 @@ Functions to plot trading data.
 
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 def plot_average_values_over_time(master_portfolio):
     """
@@ -61,3 +62,42 @@ def plot_values_over_time(master_portfolio):
                                  stock_pair_label + '.png')
             fig.savefig(fname, dpi=300, bbox_inches='tight')
             plt.close()
+
+def plot_position_over_time(master_portfolio):
+    """
+    The position can be one of the following values:
+    - "no position"
+    - "long A short B"
+    - "long B short A"
+    """
+    current_dir = os.path.dirname(__file__)
+    plots_dir = os.path.join(current_dir, '..', 'plots')
+    os.makedirs(plots_dir, exist_ok=True)
+    master_portfolio.calc_strategy_strings()
+    pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
+    stock_pair_labels = pairs_portfolio_index_dict[master_portfolio.strategy_strings[0]].keys()
+    for stock_pair_label in stock_pair_labels:
+        fig, ax = plt.subplots()
+        for strategy_string in master_portfolio.strategy_strings:
+            pairs_portfolio_index = \
+                pairs_portfolio_index_dict[strategy_string][stock_pair_label]
+            pair_portfolio = master_portfolio.pair_portfolios[pairs_portfolio_index]
+            postion_over_time_int = \
+                (1 * (np.array(pair_portfolio.position_over_time) == "long A short B")) -\
+                (1 * (np.array(pair_portfolio.position_over_time) == "long B short A"))
+            ax.scatter(pair_portfolio.dates_over_time,
+                       postion_over_time_int,
+                       s = 0.1,
+                       label=strategy_string)
+        ax.set_ylabel('Position (Position limit = $' +
+                      f'{int(master_portfolio.position_limit):d})')
+        ax.set_yticks([-1, 0, 1])
+        ax.set_yticklabels(["long B short A", "no position", "long A short B"])
+        plt.xticks(rotation=45)
+        ax.set_title(f'Position over time for stock pair {stock_pair_label}')
+        ax.legend()
+        plot_subdir = os.path.join(plots_dir, 'position_over_time')
+        os.makedirs(plot_subdir, exist_ok=True)
+        fname = os.path.join(plot_subdir, 'position_over_time_' +
+                             stock_pair_label + '.png')
+        fig.savefig(fname, dpi=300, bbox_inches='tight')

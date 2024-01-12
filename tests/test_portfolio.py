@@ -124,7 +124,7 @@ def test_calc_average_values_over_time_by_strategy():
     """
     Test the calc_average_values_over_time_by_strategy method of the MasterPortfolio class.
     """
-    
+
     # Arrange
     master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT, TRAINING_DATA, TESTING_DATA)
     mock_pair_portfolio1 = Mock()
@@ -144,12 +144,14 @@ def test_calc_average_values_over_time_by_strategy():
     master_portfolio.calc_average_values_over_time_by_strategy()
 
     # Assert
-    assert np.array_equal(master_portfolio.average_values_over_time["portfolio_value"]["MockStrategy1"],
-                          np.array([6, 7, 8, 9, 10]))
+    assert np.array_equal(
+        master_portfolio.average_values_over_time["portfolio_value"]["MockStrategy1"],
+        np.array([6, 7, 8, 9, 10]))
     # np.
-    assert np.array_equal(master_portfolio.average_values_over_time["cash"]["MockStrategy1"],
-                          np.array([11, 12, 13, 14, 15]))
-    
+    assert np.array_equal(
+        master_portfolio.average_values_over_time["cash"]["MockStrategy1"],
+        np.array([11, 12, 13, 14, 15]))
+
 def test_pair_portfolio_initialization():
     """
     Test the initialization of the PairPortfolio class.

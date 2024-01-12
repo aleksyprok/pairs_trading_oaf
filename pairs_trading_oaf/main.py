@@ -47,8 +47,9 @@ for StrategyClass in [strategies.StrategyA, strategies.StrategyB]:
 
 trading.simulate_trading(master_portfolio)
 
-plotting.plot_average_values_over_time(master_portfolio)
-plotting.plot_values_over_time(master_portfolio)
+# plotting.plot_average_values_over_time(master_portfolio)
+# plotting.plot_values_over_time(master_portfolio)
+plotting.plot_position_over_time(master_portfolio)
 
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")

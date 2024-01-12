@@ -1,6 +1,8 @@
 """
 Test the routines in the portfolio module.
 """
+from unittest.mock import Mock
+import numpy as np
 import pandas as pd
 from pairs_trading_oaf import portfolio
 from pairs_trading_oaf import strategies
@@ -68,6 +70,86 @@ def test_average_portfolio_value_over_time():
     for actual, expected in zip(actual_average_value, expected_average_value):
         assert actual == expected
 
+# Use mock pair portfolio to test the calc_strategy_strings method
+def test_calc_strategy_strings():
+    """
+    Test the calc_strategy_strings method of the MasterPortfolio class.
+    """
+    # Arrange
+    master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT, TRAINING_DATA, TESTING_DATA)
+    mock_pair_portfolio1 = Mock()
+    mock_pair_portfolio1.strategy = Mock()
+    mock_pair_portfolio1.strategy.__class__.__name__ = "MockStrategy1"
+    mock_pair_portfolio2 = Mock()
+    mock_pair_portfolio2.strategy = Mock()
+    mock_pair_portfolio2.strategy.__class__.__name__ = "MockStrategy2"
+    master_portfolio.pair_portfolios = [mock_pair_portfolio1, mock_pair_portfolio2]
+
+    # Act
+    master_portfolio.calc_strategy_strings()
+
+    # Assert
+    assert master_portfolio.strategy_strings == ["MockStrategy1", "MockStrategy2"]
+
+def test_calc_pairs_portfolio_index_dict():
+    """
+    Test the calc_pairs_portfolio_index_dict method of the MasterPortfolio class.
+    """
+
+    # Arrange
+    master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT, TRAINING_DATA, TESTING_DATA)
+    mock_pair_portfolio1 = Mock()
+    mock_pair_portfolio1.strategy = Mock()
+    mock_pair_portfolio1.strategy.__class__.__name__ = "MockStrategy1"
+    mock_pair_portfolio1.stock_pair_labels = (":StockA)", ":StockB)")
+    mock_pair_portfolio2 = Mock()
+    mock_pair_portfolio2.strategy = Mock()
+    mock_pair_portfolio2.strategy.__class__.__name__ = "MockStrategy2"
+    mock_pair_portfolio2.stock_pair_labels = (":StockC)", ":StockD)")
+    master_portfolio.pair_portfolios = [mock_pair_portfolio2, mock_pair_portfolio1]
+
+    # Act
+    master_portfolio.calc_strategy_strings()
+    pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
+
+    # Assert
+    pairs_portfolio_index_dict_test = {}
+    pairs_portfolio_index_dict_test["MockStrategy2"] = {}
+    pairs_portfolio_index_dict_test["MockStrategy2"]["StockC_StockD"] = 0
+    pairs_portfolio_index_dict_test["MockStrategy1"] = {}
+    pairs_portfolio_index_dict_test["MockStrategy1"]["StockA_StockB"] = 1
+    assert pairs_portfolio_index_dict == pairs_portfolio_index_dict_test
+
+def test_calc_average_values_over_time_by_strategy():
+    """
+    Test the calc_average_values_over_time_by_strategy method of the MasterPortfolio class.
+    """
+    
+    # Arrange
+    master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT, TRAINING_DATA, TESTING_DATA)
+    mock_pair_portfolio1 = Mock()
+    mock_pair_portfolio1.strategy = Mock()
+    mock_pair_portfolio1.strategy.__class__.__name__ = "MockStrategy1"
+    mock_pair_portfolio1.portfolio_value_over_time = [1, 2, 3, 4, 5]
+    mock_pair_portfolio1.cash_over_time = [6, 7, 8, 9, 10]
+    mock_pair_portfolio2 = Mock()
+    mock_pair_portfolio2.strategy = Mock()
+    mock_pair_portfolio2.strategy.__class__.__name__ = "MockStrategy1"
+    mock_pair_portfolio2.portfolio_value_over_time = [11, 12, 13, 14, 15]
+    mock_pair_portfolio2.cash_over_time = [16, 17, 18, 19, 20]
+    master_portfolio.pair_portfolios = [mock_pair_portfolio1, mock_pair_portfolio2]
+
+    # Act
+    master_portfolio.calc_strategy_strings()
+    master_portfolio.calc_average_values_over_time_by_strategy()
+
+    # Assert
+    assert np.array_equal(master_portfolio.average_values_over_time["portfolio_value"]["MockStrategy1"],
+                          np.array([6, 7, 8, 9, 10]))
+    # np.
+    assert np.array_equal(master_portfolio.average_values_over_time["cash"]["MockStrategy1"],
+                          np.array([11, 12, 13, 14, 15]))
+    
 def test_pair_portfolio_initialization():
     """
     Test the initialization of the PairPortfolio class.

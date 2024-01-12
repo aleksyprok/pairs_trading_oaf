@@ -127,8 +127,8 @@ class StrategyB(BaseStrategy):
 
     class MACDVals:
         """
-        Class to store the MACD and signal values as well as the exponential weighted moving averages
-        of the ratio of the stock prices.
+        Class to store the MACD and signal values as well as the exponential weighted moving
+        averages of the ratio of the stock prices.
         """
         def __init__(self, fast_period: int = 12, slow_period: int = 26, signal_period: int = 9):
             self.fast_period = fast_period

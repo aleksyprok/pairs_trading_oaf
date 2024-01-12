@@ -43,6 +43,28 @@ class MasterPortfolio:
             if pair_portfolio.strategy.__class__.__name__ not in self.strategy_strings:
                 self.strategy_strings.append(pair_portfolio.strategy.__class__.__name__)
 
+    def calc_pairs_portfolio_index_dict(self):
+        """
+        Calculate a dictionary of indices for each pair portfolio.
+
+        Need to have set self.strategy_strings first.
+
+        The dictionary is of the form:
+        pairs_portfolio_index_dict[strategy_string][stock_pair] = index
+        """
+        pairs_portfolio_index_dict = {}
+        for strategy_string in self.strategy_strings:
+            pairs_portfolio_index_dict[strategy_string] = {}
+        for i, pair_portfolio in enumerate(self.pair_portfolios):
+            strategy_string = pair_portfolio.strategy.__class__.__name__
+            stock_a_label = pair_portfolio.stock_pair_labels[0]
+            stock_a_label = stock_a_label[stock_a_label.find(':')+1:stock_a_label.find(')')]
+            stock_b_label = pair_portfolio.stock_pair_labels[1]
+            stock_b_label = stock_b_label[stock_b_label.find(':')+1:stock_b_label.find(')')]
+            stock_pair_label = stock_a_label + '_' + stock_b_label
+            pairs_portfolio_index_dict[strategy_string][stock_pair_label] = i
+        return pairs_portfolio_index_dict
+
     def calc_average_values_over_time_by_strategy(self):
         """
         Calculate the average value of the portfolio over time
@@ -74,32 +96,12 @@ class MasterPortfolio:
                 self.average_values_over_time[value_string][strategy_string] /= \
                     num_pairs_portfolio_counter[strategy_string]
 
-    def calc_pairs_portfolio_index_dict(self):
-        """
-        Calculate a dictionary of indices for each pair portfolio.
-
-        Need to have set self.strategy_strings first.
-
-        The dictionary is of the form:
-        pairs_portfolio_index_dict[strategy_string][stock_pair] = index
-        """
-        pairs_portfolio_index_dict = {}
-        for strategy_string in self.strategy_strings:
-            pairs_portfolio_index_dict[strategy_string] = {}
-        for i, pair_portfolio in enumerate(self.pair_portfolios):
-            strategy_string = pair_portfolio.strategy.__class__.__name__
-            stock_a_label = pair_portfolio.stock_pair_labels[0]
-            stock_a_label = stock_a_label[stock_a_label.find(':')+1:stock_a_label.find(')')]
-            stock_b_label = pair_portfolio.stock_pair_labels[1]
-            stock_b_label = stock_b_label[stock_b_label.find(':')+1:stock_b_label.find(')')]
-            stock_pair_label = stock_a_label + '_' + stock_b_label
-            pairs_portfolio_index_dict[strategy_string][stock_pair_label] = i
-        return pairs_portfolio_index_dict
-
     def average_portfolio_value_over_time(self):
         """
         Calculate the average value of the portfolio over time
         across all the pair portfolios.
+
+        This function is not used anywhere so it is deprecated.
         """
 
         total_portfolio_value_over_time = \
@@ -112,6 +114,8 @@ class MasterPortfolio:
         """
         Calculate the average cash over time
         across all the pair portfolios.
+
+        This function is not used anywhere so it is deprecated.
         """
         total_cash_over_time = \
             np.zeros(len(self.pair_portfolios[0].cash_over_time))

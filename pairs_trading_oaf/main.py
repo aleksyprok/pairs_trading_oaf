@@ -34,7 +34,7 @@ stock_pair_labels_list = [
     ("Caterpillar Inc. (NYSE:CAT)", "Deere & Company (NYSE:DE)"),
     ("Wells Fargo & Company (NYSE:WFC)", "Citigroup Inc. (NYSE:C)"),
 ]
-StrategyClass = strategies.StrategyA
+StrategyClass = strategies.StrategyB2
 
 master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
                                              TRAINING_DATA_FNAME,
@@ -53,4 +53,4 @@ plotting.plot_portfolio_value_over_time(master_portfolio)
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")
 
-plt.show()
+# plt.show()

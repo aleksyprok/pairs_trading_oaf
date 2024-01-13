@@ -66,7 +66,7 @@ class BaseStrategy(ABC):
 class StrategyA(BaseStrategy):
     """
     Strategy A: Buy stock A and short stock B if the z-score of their ratios 
-    is below the lower threshold.
+    is below the lower threshold. This is a mean reversion strategy.
     Buy stock B and short stock A if the z-score is above the upper threshold.
     Calculate the z-score using a moving average and standard deviation.
     """
@@ -217,3 +217,49 @@ class StrategyB(BaseStrategy):
         self.macd.signal = new_signal
 
         return position
+    
+class StrategyC(BaseStrategy):
+    """
+    This is a mean reversion strategy that uses Bollinger Bands to determine the position.
+
+    To be honest, this is very similar to StrategyA but uses Bollinger Bands instead of
+    z-scores to determine the position.
+    """
+    
+    def __init__(self, pair_portfolio,
+                 window_size: int = 20,
+                 num_std: int = 2):
+        self.pair_portfolio = pair_portfolio
+        self.window_size = window_size
+        self.num_std = num_std
+        self.window_prices = self.calculate_initial_window(self.window_size)
+
+    def calculate_new_position(self):
+        """
+        Calculate the new position for the pair portfolio.
+
+        Takes the latest prices of the stock pair and calculates the new position based on the
+        Bollinger Bands. The new position can be one of the following strings:
+        - "no position"
+        - "long A short B"
+        - "long B short A"
+        """
+        new_prices = self.pair_portfolio.stock_pair_prices
+        current_date = self.pair_portfolio.date
+        stock_pair_labels = self.pair_portfolio.stock_pair_labels
+        new_data = pd.DataFrame([new_prices],
+                                columns=stock_pair_labels,
+                                index=[current_date])
+        self.window_prices = pd.concat([self.window_prices, new_data])
+        self.window_prices = self.window_prices.iloc[1:]
+        ratio = self.window_prices[stock_pair_labels[0]] / self.window_prices[stock_pair_labels[1]]
+        mean = ratio.mean()
+        std = max([ratio.std(), 1e-8])
+        upper_band = mean + self.num_std * std
+        lower_band = mean - self.num_std * std
+        if ratio.iloc[-1] > upper_band:
+            return 'long B short A'
+        elif ratio.iloc[-1] < lower_band:
+            return 'long A short B'
+        else:
+            return self.pair_portfolio.position

@@ -37,7 +37,7 @@ stock_pair_labels_list = [
 master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
                                              TRAINING_DATA_FNAME,
                                              TESTING_DATA_FNAME)
-for StrategyClass in [strategies.StrategyA, strategies.StrategyB]:
+for StrategyClass in [strategies.StrategyA, strategies.StrategyB, strategies.StrategyC]:
     for stock_pair_labels in stock_pair_labels_list:
         pair_portfolio = \
             portfolio.PairPortfolio(stock_pair_labels,

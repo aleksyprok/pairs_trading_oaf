@@ -12,7 +12,7 @@ In this release, our focus is to centralise the fundamental pairs trading strate
 
 # Executing code:
 
-1. Enter the pairs_trading_oaf diretory.
+1. Enter the pairs_trading_oaf directory.
 2. Execute main.py using e.g. `python main.py`.
 
 # File Structure Overview:

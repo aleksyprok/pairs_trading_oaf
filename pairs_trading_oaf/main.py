@@ -13,7 +13,6 @@ position_limit worth of stock B and vice versa when we long stock B and short st
 """
 
 import time
-import matplotlib.pyplot as plt
 from pairs_trading_oaf import trading, portfolio, strategies, plotting
 
 tic = time.perf_counter()
@@ -34,23 +33,23 @@ stock_pair_labels_list = [
     ("Caterpillar Inc. (NYSE:CAT)", "Deere & Company (NYSE:DE)"),
     ("Wells Fargo & Company (NYSE:WFC)", "Citigroup Inc. (NYSE:C)"),
 ]
-StrategyClass = strategies.StrategyB2
 
 master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
                                              TRAINING_DATA_FNAME,
                                              TESTING_DATA_FNAME)
-for stock_pair_labels in stock_pair_labels_list:
-    pair_portfolio = \
-        portfolio.PairPortfolio(stock_pair_labels,
-                                StrategyClass,
-                                master_portfolio)
-    master_portfolio.add_pair_portfolio(pair_portfolio)
+for StrategyClass in [strategies.StrategyA, strategies.StrategyB]:
+    for stock_pair_labels in stock_pair_labels_list:
+        pair_portfolio = \
+            portfolio.PairPortfolio(stock_pair_labels,
+                                    StrategyClass,
+                                    master_portfolio)
+        master_portfolio.add_pair_portfolio(pair_portfolio)
 
 trading.simulate_trading(master_portfolio)
 
-plotting.plot_portfolio_value_over_time(master_portfolio)
+plotting.plot_average_values_over_time(master_portfolio)
+plotting.plot_values_over_time(master_portfolio)
+plotting.plot_position_over_time(master_portfolio)
 
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")
-
-# plt.show()

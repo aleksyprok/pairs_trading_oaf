@@ -23,7 +23,6 @@ class StrategyX(BaseStrategy):
 """
 
 from abc import ABC, abstractmethod
-import numpy as np
 import pandas as pd
 from pairs_trading_oaf import data
 
@@ -101,7 +100,7 @@ class StrategyA(BaseStrategy):
         self.window_prices = self.window_prices.iloc[1:]
         ratio = self.window_prices[stock_pair_labels[0]] / self.window_prices[stock_pair_labels[1]]
         mean = ratio.mean()
-        std = ratio.std()
+        std = max([ratio.std(), 1e-8])
         z_score = (ratio.iloc[-1] - mean) / std
 
         if z_score < -self.z_threshold:
@@ -126,105 +125,19 @@ class StrategyB(BaseStrategy):
     The position is long stock B and short stock A if the MACD crosses below the signal line.
     """
 
-    def __init__(self, pair_portfolio,
-                 fast_window_size: int = 12,
-                 slow_window_size: int = 26,
-                 signal_window_size: int = 9):
-        self.pair_portfolio = pair_portfolio
-        self.fast_window_size = fast_window_size
-        self.slow_window_size = slow_window_size
-        self.signal_window_size = signal_window_size
-        max_window_size = np.max([self.fast_window_size,
-                                  self.slow_window_size,
-                                  self.signal_window_size])
-        # Set the window size to be the maximum window size plus 50
-        # This is to ensure that we have enough data to calculate the MACD and signal line
-        window_size = max_window_size + 50
-        self.window_prices = self.calculate_initial_window(window_size)
-
-    @staticmethod
-    def calc_macd_signal(ratio, slow_window_size, fast_window_size, signal_window_size):
-        """
-        Calculate the MACD and signal line for a given stock pair ratio.
-        """
-        fast_ema = ratio.ewm(span=fast_window_size, adjust=False).mean()
-        slow_ema = ratio.ewm(span=slow_window_size, adjust=False).mean()
-        macd = fast_ema - slow_ema
-        signal = macd.ewm(span=signal_window_size, adjust=False).mean()
-        return macd, signal
-
-    @staticmethod
-    def calc_macd_new_signal(ratio, slow_window_size, fast_window_size, signal_window_size):
-        """
-        Calculate the MACD and signal line for a given stock pair ratio.
-        """
-        fast_ema = ratio.ewm(span=fast_window_size, adjust=False).mean()
-        slow_ema = ratio.ewm(span=slow_window_size, adjust=False).mean()
-        macd = fast_ema - slow_ema
-        signal = macd.ewm(span=signal_window_size, adjust=False).mean()
-        return macd, signal
-
-    def calculate_new_position(self):
-        """
-        Calculate the new position for the pair portfolio.
-
-        Takes the latest prices of the stock pair and calculates the new position based on the
-        MACD and signal line. The new position can be one of the following strings:
-        - "no position"
-        - "long A short B"
-        - "long B short A"
-        """
-        new_prices = self.pair_portfolio.stock_pair_prices
-        current_date = self.pair_portfolio.date
-        stock_pair_labels = self.pair_portfolio.stock_pair_labels
-        new_data = pd.DataFrame([new_prices],
-                                columns=stock_pair_labels,
-                                index=[current_date])
-        self.window_prices = pd.concat([self.window_prices, new_data])
-        self.window_prices = self.window_prices.iloc[1:]
-        ratio = self.window_prices[stock_pair_labels[0]] / self.window_prices[stock_pair_labels[1]]
-        macd, signal = self.calc_macd_signal(ratio,
-                                             self.slow_window_size,
-                                             self.fast_window_size,
-                                             self.signal_window_size)
-        if macd.iloc[-1] > signal.iloc[-1] and macd.iloc[-2] < signal.iloc[-2]:
-            # MACD crossed above signal line so long stock A and short stock B
-            return 'long A short B'
-        elif macd.iloc[-1] < signal.iloc[-1] and macd.iloc[-2] > signal.iloc[-2]:
-            # MACD crossed below signal line so long stock B and short stock A
-            return 'long B short A'
-        else:
-            # Don't change the position if the MACD and signal line do not cross
-            return self.pair_portfolio.position
-
-class StrategyB2(BaseStrategy):
-    """
-    Moving Average Convergence Divergence (MACD) strategy.
-
-    The MACD strategy is a trend following strategy that uses the difference between
-    two moving averages of the stock prices to determine the position.
-
-    The MACD line is the difference between the 26-day and 12-day exponential moving averages
-    of the stock prices. The signal line is the 9-day exponential moving average of the MACD line.
-
-    The position is long stock A and short stock B if the MACD crosses above the signal line.
-
-    The position is long stock B and short stock A if the MACD crosses below the signal line.
-    """
-
     class MACDVals:
         """
-        Class to store the MACD and signal values as well as the exponential moving averages
-        of the ratio of the stock prices.
+        Class to store the MACD and signal values as well as the exponential weighted moving
+        averages of the ratio of the stock prices.
         """
         def __init__(self, fast_period: int = 12, slow_period: int = 26, signal_period: int = 9):
             self.fast_period = fast_period
             self.slow_period = slow_period
             self.signal_period = signal_period
-            self.fast_ewma = 0.0
-            self.slow_ewma = 0.0
-            self.macd = 0.0
-            self.signal = 0.0
+            self.fast_ewma = None
+            self.slow_ewma = None
+            self.macd = None
+            self.signal = None
 
     def __init__(self, pair_portfolio,
                  fast_period: int = 12,
@@ -262,10 +175,16 @@ class StrategyB2(BaseStrategy):
         df_train = df_train.tail(training_period)
         ratios = df_train[self.pair_portfolio.stock_pair_labels[0]] \
                / df_train[self.pair_portfolio.stock_pair_labels[1]]
-        for ratio in ratios:
-            new_macd, new_signal = self.calc_macd_signal(ratio)
-            self.macd.macd = new_macd
-            self.macd.signal = new_signal
+        for i, ratio in enumerate(ratios):
+            if i == 0:
+                self.macd.fast_ewma = ratio
+                self.macd.slow_ewma = ratio
+                self.macd.macd = 0
+                self.macd.signal = 0
+            else:
+                new_macd, new_signal = self.calc_macd_signal(ratio)
+                self.macd.macd = new_macd
+                self.macd.signal = new_signal
 
     def calculate_new_position(self):
         """
@@ -285,12 +204,10 @@ class StrategyB2(BaseStrategy):
 
         if new_macd > new_signal and old_macd < old_signal:
             # MACD crossed above signal line so long stock A and short stock B
-            # position = 'long A short B'
-            position = 'long B short A'
+            position = 'long A short B'
         elif new_macd < new_signal and old_macd > old_signal:
             # MACD crossed below signal line so long stock B and short stock A
-            # position = 'long B short A'
-            position = 'long A short B'
+            position = 'long B short A'
         else:
             # Don't change the position if the MACD and signal line do not cross
             position = self.pair_portfolio.position

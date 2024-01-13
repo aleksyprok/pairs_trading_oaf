@@ -185,4 +185,5 @@ class PairPortfolio(MasterPortfolio):
         if self.stock_pair_prices[1] is not None:
             portfolio_value += self.shares[1] * self.stock_pair_prices[1]
         self.portfolio_value_over_time.append(portfolio_value)
-        self.ratio_over_time.append(self.stock_pair_prices[0] / self.stock_pair_prices[1])
+        if self.stock_pair_prices[0] is not None and self.stock_pair_prices[1] is not None:
+            self.ratio_over_time.append(self.stock_pair_prices[0] / self.stock_pair_prices[1])

@@ -39,7 +39,7 @@ def plot_values_over_time(master_portfolio):
     plots_dir = os.path.join(current_dir, '..', 'plots')
     master_portfolio.calc_strategy_strings()
     pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
-    value_strings = ["portfolio_value", "cash"]
+    value_strings = ["portfolio_value", "cash", "ratio"]
     stock_pair_labels = pairs_portfolio_index_dict[master_portfolio.strategy_strings[0]].keys()
     for value_string in value_strings:
         for stock_pair_label in stock_pair_labels:

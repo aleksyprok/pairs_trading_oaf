@@ -159,6 +159,7 @@ class PairPortfolio(MasterPortfolio):
         self.shares_over_time = []
         self.stock_pair_prices_over_time = []
         self.portfolio_value_over_time = []
+        self.ratio_over_time = []
 
     def update_prices_and_date(self, date, row):
         """
@@ -184,3 +185,4 @@ class PairPortfolio(MasterPortfolio):
         if self.stock_pair_prices[1] is not None:
             portfolio_value += self.shares[1] * self.stock_pair_prices[1]
         self.portfolio_value_over_time.append(portfolio_value)
+        self.ratio_over_time.append(self.stock_pair_prices[0] / self.stock_pair_prices[1])

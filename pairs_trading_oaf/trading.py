@@ -29,33 +29,44 @@ def execute_trades(pair_portfolio, new_position):
         close_position(pair_portfolio)
         open_position(pair_portfolio, new_position)
 
+def calculate_transaction_fee(trade_amount, trading_fee=0.0):
+    """
+    Calculate the transaction fee based on the trade amount.
+    Fee is 0.1% of the trade amount.
+    """
+    return trade_amount * trading_fee
+
 def close_position(pair_portfolio):
     """
-    Close the current position. This is done by selling/buying all shares of stock A and stock B
-    until we own no shares of either stock.
+    Close the current position.
     """
-    pair_portfolio.cash = pair_portfolio.cash \
-                        + pair_portfolio.shares[0] * pair_portfolio.stock_pair_prices[0] \
-                        + pair_portfolio.shares[1] * pair_portfolio.stock_pair_prices[1]
+    total_value = pair_portfolio.shares[0] * pair_portfolio.stock_pair_prices[0] \
+                + pair_portfolio.shares[1] * pair_portfolio.stock_pair_prices[1]
+    transaction_fee = calculate_transaction_fee(total_value, trading_fee=pair_portfolio.trading_fee)
+    pair_portfolio.cash = pair_portfolio.cash + total_value - transaction_fee
     pair_portfolio.shares = (0, 0)
 
 def open_position(pair_portfolio, new_position):
     """
-    Open a new position. This is done by buying/selling all shares of stock A and stock B until
-    we own/short the maximum number of shares of each stock.
-
-    Note that we allow for the possibility of owning a fraction of a share of a stock.
+    Open a new position.
     """
     pair_portfolio.position = new_position
     if new_position == "no position":
         close_position(pair_portfolio)
-    elif new_position == "long A short B":
-        pair_portfolio.shares = (+pair_portfolio.position_limit /
-                                  pair_portfolio.stock_pair_prices[0],
-                                 -pair_portfolio.position_limit /
-                                  pair_portfolio.stock_pair_prices[1])
-    elif new_position == "long B short A":
-        pair_portfolio.shares = (-pair_portfolio.position_limit /
-                                  pair_portfolio.stock_pair_prices[0],
-                                 +pair_portfolio.position_limit /
-                                  pair_portfolio.stock_pair_prices[1])
+    else:
+        if new_position == "long A short B":
+            shares_to_trade = (+pair_portfolio.position_limit /
+                               pair_portfolio.stock_pair_prices[0],
+                               -pair_portfolio.position_limit /
+                               pair_portfolio.stock_pair_prices[1])
+        elif new_position == "long B short A":
+            shares_to_trade = (-pair_portfolio.position_limit /
+                               pair_portfolio.stock_pair_prices[0],
+                               +pair_portfolio.position_limit /
+                               pair_portfolio.stock_pair_prices[1])
+        
+        total_value = abs(shares_to_trade[0]) * pair_portfolio.stock_pair_prices[0] \
+                    + abs(shares_to_trade[1]) * pair_portfolio.stock_pair_prices[1]
+        transaction_fee = calculate_transaction_fee(total_value, trading_fee=pair_portfolio.trading_fee)
+        pair_portfolio.cash -= transaction_fee
+        pair_portfolio.shares = shares_to_trade

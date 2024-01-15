@@ -17,10 +17,12 @@ class MasterPortfolio:
     window is greater than the trading start date. The testing data is used to execute
     trades.
     """
-    def __init__(self, position_limit: int, training_data_str: str, testing_data_str: str):
+    def __init__(self, position_limit: int, training_data_str: str, testing_data_str: str,
+                 trading_fee: float = 0.0):
         self.position_limit = position_limit
         self.training_data_str = training_data_str
         self.testing_data_str = testing_data_str
+        self.trading_fee = trading_fee
         self.pair_portfolios = []
         self.average_pertofolio_value_over_time = None
         self.strategy_strings = None

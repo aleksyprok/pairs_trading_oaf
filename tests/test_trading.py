@@ -176,3 +176,33 @@ def test_open_position(master_portfolio):
     # Test "no position"
     trading.open_position(pair_portfolio, "no position")
     assert pair_portfolio.shares == (0, 0)
+
+def test_close_position_with_transaction_fee(master_portfolio):
+    """
+    Test the close_position function with transaction fee.
+    """
+    # Setup
+    pair_portfolio = portfolio.PairPortfolio(('StockA', 'StockB'), MockStrategy, master_portfolio)
+    pair_portfolio.shares = (10, -5)
+    pair_portfolio.stock_pair_prices = (100, 200)
+    pair_portfolio.cash = 1000
+    pair_portfolio.trading_fee = 0.001
+
+    # Action
+    trading.close_position(pair_portfolio)
+
+    # Assertions
+    total_trade_value = 10 * 100 + (-5) * 200
+    transaction_fee = trading.calculate_transaction_fee(total_trade_value, pair_portfolio.trading_fee)
+    expected_cash = 1000 + total_trade_value - transaction_fee
+    assert pair_portfolio.cash == pytest.approx(expected_cash)
+    assert pair_portfolio.shares == (0, 0)
+
+def test_calculate_transaction_fee():
+    """
+    Test the calculate_transaction_fee function.
+    """
+    trade_amount = 1000
+    trading_fee = 0.001
+    expected_fee = 1
+    assert trading.calculate_transaction_fee(trade_amount, trading_fee) == expected_fee

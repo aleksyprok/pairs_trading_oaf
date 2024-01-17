@@ -39,3 +39,10 @@ In this release, our focus is to centralise the fundamental pairs trading strate
 - **Issue Tracking for New Features**: Before adding new features, you are encouraged to raise an issue in the repository. This helps in tracking requests and discussions. When creating a new branch for the feature, include the issue number in the branch name for easy reference.
 
 - **Code Style and Linting**: You are encouraged to follow the PyLint linting style to maintain code quality and consistency. You can install the PyLint package directly into Visual Studio Code to aid in adhering to these standards.
+
+# Strategies overview
+
+So far this code contains three pairs trading strategies. StrtategyA, StrategyB and StrategyC, all of these are designed to be as close as possible to the strategies in Michał's code
+- StrategyA: Simple z-score mean reversion strategy.
+- StrategyB: Simple MACD (moving average convergence divergence) trend-following strategy.
+- StrategyC: Simple Bollinger band mean reversion strategy.

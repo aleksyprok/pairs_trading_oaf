@@ -217,7 +217,7 @@ class StrategyB(BaseStrategy):
         self.macd.signal = new_signal
 
         return position
-    
+
 class StrategyC(BaseStrategy):
     """
     This is a mean reversion strategy that uses Bollinger Bands to determine the position.
@@ -225,7 +225,7 @@ class StrategyC(BaseStrategy):
     To be honest, this is very similar to StrategyA but uses Bollinger Bands instead of
     z-scores to determine the position.
     """
-    
+
     def __init__(self, pair_portfolio,
                  window_size: int = 20,
                  num_std: int = 2):

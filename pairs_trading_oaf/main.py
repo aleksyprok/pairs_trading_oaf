@@ -19,8 +19,9 @@ tic = time.perf_counter()
 
 TRAINING_DATA_FNAME = "Price Data - CSV - Formation Period.csv"
 TESTING_DATA_FNAME = "Price Data - CSV - Trading Period.csv"
-POSITION_LIMIT = int(1e0)
 TRADING_FEE = 0.0002
+INITIAL_CASH = 10
+POSITION_LIMIT = INITIAL_CASH * 0.2
 
 stock_pair_labels_list = [
     ("Microsoft Corporation (NasdaqGS:MSFT)", "Apple Inc. (NasdaqGS:AAPL)"),
@@ -44,7 +45,8 @@ for StrategyClass in [strategies.StrategyA, strategies.StrategyB, strategies.Str
         pair_portfolio = \
             portfolio.PairPortfolio(stock_pair_labels,
                                     StrategyClass,
-                                    master_portfolio)
+                                    master_portfolio,
+                                    cash=INITIAL_CASH)
         master_portfolio.add_pair_portfolio(pair_portfolio)
 
 trading.simulate_trading(master_portfolio)

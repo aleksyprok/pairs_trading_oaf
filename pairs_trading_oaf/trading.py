@@ -15,6 +15,8 @@ def simulate_trading(master_portfolio):
         for pair_portfolio in master_portfolio.pair_portfolios:
             pair_portfolio.update_prices_and_date(date, row)
             new_position = pair_portfolio.strategy.calculate_new_position()
+            if pair_portfolio.portfolio_value < 0:
+                new_position = "no position"
             execute_trades(pair_portfolio, new_position)
             pair_portfolio.update_over_time_values()
 
@@ -64,9 +66,10 @@ def open_position(pair_portfolio, new_position):
                                pair_portfolio.stock_pair_prices[0],
                                +pair_portfolio.position_limit /
                                pair_portfolio.stock_pair_prices[1])
-        
+
         total_value = abs(shares_to_trade[0]) * pair_portfolio.stock_pair_prices[0] \
                     + abs(shares_to_trade[1]) * pair_portfolio.stock_pair_prices[1]
-        transaction_fee = calculate_transaction_fee(total_value, trading_fee=pair_portfolio.trading_fee)
+        transaction_fee = calculate_transaction_fee(total_value,
+                                                    trading_fee=pair_portfolio.trading_fee)
         pair_portfolio.cash -= transaction_fee
         pair_portfolio.shares = shares_to_trade

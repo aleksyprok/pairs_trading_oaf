@@ -112,7 +112,7 @@ def test_simulate_trading(mock_read_csv, master_portfolio):
         assert actual[0] == pytest.approx(expected[0])
         assert actual[1] == pytest.approx(expected[1])
     actual_cash_over_time = master_portfolio.pair_portfolios[0].cash_over_time
-    cash_changes_over_time = [0,
+    cash_changes_over_time = [1e6 + 0,
                               +1 / 100 * 101 - 1 / 200 * 201,
                               -1 / 101 * 102 + 1 / 201 * 202,
                               0,
@@ -121,7 +121,7 @@ def test_simulate_trading(mock_read_csv, master_portfolio):
     for actual, expected in zip(actual_cash_over_time, excepted_cash_over_time):
         assert actual == pytest.approx(expected)
     actual_cash_over_time = master_portfolio.pair_portfolios[1].cash_over_time
-    cash_changes_over_time = [0,
+    cash_changes_over_time = [1e6 + 0,
                               +1 / 400 * 401 - 1 / 300 * 301,
                               -1 / 401 * 402 + 1 / 301 * 302,
                               0,

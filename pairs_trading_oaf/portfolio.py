@@ -144,14 +144,16 @@ class PairPortfolio(MasterPortfolio):
     def __init__(self,
                  stock_pair_labels: Tuple[str, str],
                  strategy_class: Type[strategies.BaseStrategy],
-                 master_portfolio: MasterPortfolio):
+                 master_portfolio: MasterPortfolio,
+                 cash: float = 1e6):
         super().__init__(master_portfolio.position_limit,
                          master_portfolio.training_data_str,
                          master_portfolio.testing_data_str)
         self.stock_pair_labels = stock_pair_labels
         self.strategy = strategy_class(self)
-        self.cash = 0
+        self.cash = cash
         self.stock_pair_prices = (None, None) # Stores the latest prices of the stock pair
+        self.portfolio_value = self.cash
         self.date = None # Stores the latest date
         self.position = "no position"
         self.shares = (0, 0) # Stores the number of shares of stock A and stock B
@@ -181,11 +183,11 @@ class PairPortfolio(MasterPortfolio):
         self.position_over_time.append(self.position)
         self.shares_over_time.append(self.shares)
         self.stock_pair_prices_over_time.append(self.stock_pair_prices)
-        portfolio_value = self.cash
+        self.portfolio_value = self.cash
         if self.stock_pair_prices[0] is not None:
-            portfolio_value += self.shares[0] * self.stock_pair_prices[0]
+            self.portfolio_value += self.shares[0] * self.stock_pair_prices[0]
         if self.stock_pair_prices[1] is not None:
-            portfolio_value += self.shares[1] * self.stock_pair_prices[1]
-        self.portfolio_value_over_time.append(portfolio_value)
+            self.portfolio_value += self.shares[1] * self.stock_pair_prices[1]
+        self.portfolio_value_over_time.append(self.portfolio_value)
         if self.stock_pair_prices[0] is not None and self.stock_pair_prices[1] is not None:
             self.ratio_over_time.append(self.stock_pair_prices[0] / self.stock_pair_prices[1])

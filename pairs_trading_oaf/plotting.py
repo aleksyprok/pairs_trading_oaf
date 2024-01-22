@@ -151,7 +151,7 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
                             arrowprops=dict(arrowstyle="->", color=color),
                             ha='center', va='bottom', color=color)
 
-        ax.set_ylabel('Price [USD]')
+        ax.set_ylabel(f'Ratio of the pair {stock_pair_label}')
         plt.xticks(rotation=45)
         ax.set_title(f'StrategyC Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
         ax.legend()

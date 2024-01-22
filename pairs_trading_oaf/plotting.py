@@ -153,7 +153,7 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
 
         ax.set_ylabel('Price [USD]')
         plt.xticks(rotation=45)
-        ax.set_title(f'Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
+        ax.set_title(f'StrategyC Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
         ax.legend()
 
         plot_subdir = os.path.join(plots_dir, 'strategy_c_bollinger_bands_and_trades')

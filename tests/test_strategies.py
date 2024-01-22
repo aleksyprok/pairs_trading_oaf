@@ -278,7 +278,7 @@ def test_strategy_c_initialization(mock_read_csv):
 
     # Assert
     assert strategy.pair_portfolio == mock_pair_portfolio
-    assert strategy.window_size == 20
+    assert strategy.window_size == 45
     assert strategy.window_prices.equals(mock_data[['StockA', 'StockB']].tail(20))
     assert strategy.num_std == 2
 

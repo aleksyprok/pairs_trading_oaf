@@ -101,3 +101,64 @@ def plot_position_over_time(master_portfolio):
         fname = os.path.join(plot_subdir, 'position_over_time_' +
                              stock_pair_label + '.png')
         fig.savefig(fname, dpi=300, bbox_inches='tight')
+
+def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
+    """
+    Plots the Bollinger bands and annotates the trades for Strategy C
+    """
+
+    current_dir = os.path.dirname(__file__)
+    plots_dir = os.path.join(current_dir, '..', 'plots')
+    os.makedirs(plots_dir, exist_ok=True)
+    master_portfolio.calc_strategy_strings()
+    pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
+    stock_pair_labels = pairs_portfolio_index_dict[master_portfolio.strategy_strings[0]].keys()
+
+    for stock_pair_label in stock_pair_labels:
+        pairs_portfolio_index = pairs_portfolio_index_dict["StrategyC"][stock_pair_label]
+        pair_portfolio = master_portfolio.pair_portfolios[pairs_portfolio_index]
+
+        fig, ax = plt.subplots(figsize=(12, 7))  # Increased figure size for better readability
+        ax.plot(pair_portfolio.dates_over_time, pair_portfolio.ratio_over_time,
+                label="Ratio over time")
+
+        # Plot upper and lower Bollinger Bands with the same color for consistency
+        band_color = 'skyblue'
+        ax.plot(pair_portfolio.dates_over_time, pair_portfolio.strategy.upper_band_over_time,
+                label="Upper Bollinger Band", color=band_color)
+        ax.plot(pair_portfolio.dates_over_time, pair_portfolio.strategy.lower_band_over_time,
+                label="Lower Bollinger Band", color=band_color)
+
+        # Calculate the cash delta
+        cash_delta = np.diff(pair_portfolio.cash_over_time,
+                             prepend=pair_portfolio.cash_over_time[0])
+
+        # Annotate the plot with cash delta, using green for positive and red for negative values
+        for i, delta in enumerate(cash_delta):
+            if delta != 0:
+                # Choose color based on the sign of the cash delta
+                color = 'green' if delta > 0 else 'red'
+
+                # Prepare the text for annotation
+                position = pair_portfolio.position_over_time[i]
+                delta_text = f'{position}\nΔ${delta:.2f}'
+
+                # Create the annotation with the corresponding color
+                ax.annotate(delta_text,
+                            xy=(pair_portfolio.dates_over_time[i],
+                                pair_portfolio.ratio_over_time[i]),
+                            xytext=(0, 10), textcoords='offset points',
+                            arrowprops=dict(arrowstyle="->", color=color),
+                            ha='center', va='bottom', color=color)
+
+        ax.set_ylabel('Price [USD]')
+        plt.xticks(rotation=45)
+        ax.set_title(f'Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
+        ax.legend()
+
+        plot_subdir = os.path.join(plots_dir, 'strategy_c_bollinger_bands_and_trades')
+        os.makedirs(plot_subdir, exist_ok=True)
+        fname = os.path.join(plot_subdir,
+                             f'strategy_c_bollinger_bands_and_trades_{stock_pair_label}.png')
+        fig.savefig(fname, dpi=300, bbox_inches='tight')
+        plt.close(fig)  # Close the figure to free memory

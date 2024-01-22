@@ -227,12 +227,14 @@ class StrategyC(BaseStrategy):
     """
 
     def __init__(self, pair_portfolio,
-                 window_size: int = 20,
+                 window_size: int = 45,
                  num_std: int = 2):
         self.pair_portfolio = pair_portfolio
         self.window_size = window_size
         self.num_std = num_std
         self.window_prices = self.calculate_initial_window(self.window_size)
+        self.upper_band_over_time = []
+        self.lower_band_over_time = []
 
     def calculate_new_position(self):
         """
@@ -257,6 +259,8 @@ class StrategyC(BaseStrategy):
         std = max([ratio.std(), 1e-8])
         upper_band = mean + self.num_std * std
         lower_band = mean - self.num_std * std
+        self.upper_band_over_time.append(upper_band)
+        self.lower_band_over_time.append(lower_band)
         if ratio.iloc[-1] > upper_band:
             return 'long B short A'
         elif ratio.iloc[-1] < lower_band:

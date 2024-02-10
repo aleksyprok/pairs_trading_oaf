@@ -17,15 +17,19 @@ from pairs_trading_oaf import trading, portfolio, strategies, plotting
 
 tic = time.perf_counter()
 
-TRAINING_DATA_FNAMES = ["Price Data - CSV - Formation Period - ETF.csv",
+TRAINING_DATA_FNAMES = ["Price Data - CSV - Formation Period - Crypto.csv",
+                        "Price Data - CSV - Formation Period - ETF.csv",
                         "Price Data - CSV - Formation Period.csv"]
-TESTING_DATA_FNAMES = ["Price Data - CSV - Trading Period - ETF.csv",
+TESTING_DATA_FNAMES = ["Price Data - CSV - Trading Period - Crypto.csv",
+                       "Price Data - CSV - Trading Period - ETF.csv",
                        "Price Data - CSV - Trading Period.csv"]
 TRADING_FEE = 0.0002
 INITIAL_CASH = 1
 POSITION_LIMIT = INITIAL_CASH * 0.3
 
 stock_pair_labels_list_of_lists = []
+stock_pair_labels_list = [("Bitcoin (:BTC_over_USD)", "Ethereum (:ETH_over_USD)")]
+stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
 stock_pair_labels_list = [
     ("iShares MSCI EAFE ETF (NYSE Arca:EFA)", "SPDR Gold Trust (NYSE Arca:GLD)"),
     ("iShares Core S&P 500 ETF (NYSE Arca:IVV)", "iShares U.S. Real Estate ETF (NYSE Arca:IYR)"),
@@ -48,7 +52,7 @@ stock_pair_labels_list = [
     ("Wells Fargo & Company (NYSE:WFC)", "Citigroup Inc. (NYSE:C)"),
 ]
 stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
-master_portfolio_names = ["ETFs", "Stocks"]
+master_portfolio_names = ["Crypto", "ETFs", "Stocks"]
 
 for i, stock_pair_labels_list in enumerate(stock_pair_labels_list_of_lists):
     stock_pair_labels_list = stock_pair_labels_list_of_lists[i]

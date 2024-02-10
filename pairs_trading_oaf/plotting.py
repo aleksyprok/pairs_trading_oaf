@@ -25,7 +25,7 @@ def plot_average_values_over_time(master_portfolio):
         ax.set_ylabel(value_string + ' [USD] (Position limit = $' +
                 f'{master_portfolio.position_limit:.2f})')
         plt.xticks(rotation=45)
-        ax.set_title(f'Average {value_string} over time')
+        ax.set_title(f'{master_portfolio.name} Average {value_string} over time')
         ax.legend()
         fname = os.path.join(plots_dir, 'average_' + value_string + '_over_time.png')
         fig.savefig(fname, dpi=300, bbox_inches='tight')

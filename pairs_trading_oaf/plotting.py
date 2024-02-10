@@ -12,7 +12,7 @@ def plot_average_values_over_time(master_portfolio):
     in the master portfolio over the entire trading period.
     """
     current_dir = os.path.dirname(__file__)
-    plots_dir = os.path.join(current_dir, '..', 'plots')
+    plots_dir = os.path.join(current_dir, '..', 'plots', master_portfolio.name)
     os.makedirs(plots_dir, exist_ok=True)
     master_portfolio.calc_strategy_strings()
     master_portfolio.calc_average_values_over_time_by_strategy()
@@ -23,7 +23,7 @@ def plot_average_values_over_time(master_portfolio):
                     master_portfolio.average_values_over_time[value_string][strategy_string],
                     label=strategy_string)
         ax.set_ylabel(value_string + ' [USD] (Position limit = $' +
-                f'{int(master_portfolio.position_limit):d})')
+                f'{master_portfolio.position_limit:.2f})')
         plt.xticks(rotation=45)
         ax.set_title(f'Average {value_string} over time')
         ax.legend()
@@ -36,7 +36,7 @@ def plot_values_over_time(master_portfolio):
     Plots the values of the portfolio over time for each pair.
     """
     current_dir = os.path.dirname(__file__)
-    plots_dir = os.path.join(current_dir, '..', 'plots')
+    plots_dir = os.path.join(current_dir, '..', 'plots', master_portfolio.name)
     master_portfolio.calc_strategy_strings()
     pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
     value_strings = ["portfolio_value", "cash", "ratio"]
@@ -52,7 +52,7 @@ def plot_values_over_time(master_portfolio):
                         pair_portfolio.__dict__[value_string + "_over_time"],
                         label=strategy_string)
             ax.set_ylabel(value_string + ' [USD] (Position limit = $' +
-                          f'{int(master_portfolio.position_limit):d})')
+                          f'{master_portfolio.position_limit:.2f})')
             plt.xticks(rotation=45)
             ax.set_title(f'{value_string} over time for stock pair {stock_pair_label}')
             ax.legend()
@@ -71,7 +71,7 @@ def plot_position_over_time(master_portfolio):
     - "long B short A"
     """
     current_dir = os.path.dirname(__file__)
-    plots_dir = os.path.join(current_dir, '..', 'plots')
+    plots_dir = os.path.join(current_dir, '..', 'plots', master_portfolio.name)
     os.makedirs(plots_dir, exist_ok=True)
     master_portfolio.calc_strategy_strings()
     pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
@@ -90,7 +90,7 @@ def plot_position_over_time(master_portfolio):
                        s = 0.1,
                        label=strategy_string)
         ax.set_ylabel('Position (Position limit = $' +
-                      f'{int(master_portfolio.position_limit):d})')
+                      f'{master_portfolio.position_limit:.2f})')
         ax.set_yticks([-1, 0, 1])
         ax.set_yticklabels(["long B short A", "no position", "long A short B"])
         plt.xticks(rotation=45)
@@ -109,7 +109,7 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
     """
 
     current_dir = os.path.dirname(__file__)
-    plots_dir = os.path.join(current_dir, '..', 'plots')
+    plots_dir = os.path.join(current_dir, '..', 'plots', master_portfolio.name)
     os.makedirs(plots_dir, exist_ok=True)
     master_portfolio.calc_strategy_strings()
     pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()

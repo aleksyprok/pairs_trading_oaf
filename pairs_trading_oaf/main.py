@@ -17,12 +17,24 @@ from pairs_trading_oaf import trading, portfolio, strategies, plotting
 
 tic = time.perf_counter()
 
-TRAINING_DATA_FNAME = "Price Data - CSV - Formation Period.csv"
-TESTING_DATA_FNAME = "Price Data - CSV - Trading Period.csv"
+TRAINING_DATA_FNAMES = ["Price Data - CSV - Formation Period - ETF.csv",
+                        "Price Data - CSV - Formation Period.csv"]
+TESTING_DATA_FNAMES = ["Price Data - CSV - Trading Period - ETF.csv",
+                       "Price Data - CSV - Trading Period.csv"]
 TRADING_FEE = 0.0002
 INITIAL_CASH = 1
 POSITION_LIMIT = INITIAL_CASH * 0.3
 
+stock_pair_labels_list_of_lists = []
+stock_pair_labels_list = [
+    ("iShares MSCI EAFE ETF (NYSE Arca:EFA)", "SPDR Gold Trust (NYSE Arca:GLD)"),
+    ("iShares Core S&P 500 ETF (NYSE Arca:IVV)", "iShares U.S. Real Estate ETF (NYSE Arca:IYR)"),
+    ("VanEck Oil Services ETF (NYSE Arca:OIH)", "iShares Silver Trust (NYSE Arca:SLV)"),
+    ("SPDR S&P 500 ETF Trust (NYSE Arca:SPY)",
+     "Vanguard FTSE Developed Markets ETF (NYSE Arca:VEA)"),
+    ("Vanguard Real Estate ETF (NYSE Arca:VNQ)", "Energy Select Sector SPDR Fund (NYSE Arca:XLE)"),
+]
+stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
 stock_pair_labels_list = [
     ("Microsoft Corporation (NasdaqGS:MSFT)", "Apple Inc. (NasdaqGS:AAPL)"),
     ("Bank of America Corporation (NYSE:BAC)", "JPMorgan Chase & Co. (NYSE:JPM)"),
@@ -35,26 +47,33 @@ stock_pair_labels_list = [
     ("Caterpillar Inc. (NYSE:CAT)", "Deere & Company (NYSE:DE)"),
     ("Wells Fargo & Company (NYSE:WFC)", "Citigroup Inc. (NYSE:C)"),
 ]
+stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
+master_portfolio_names = ["ETFs", "Stocks"]
 
-master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
-                                             TRAINING_DATA_FNAME,
-                                             TESTING_DATA_FNAME,
-                                             trading_fee=TRADING_FEE)
-for StrategyClass in [strategies.StrategyA, strategies.StrategyB, strategies.StrategyC]:
-    for stock_pair_labels in stock_pair_labels_list:
-        pair_portfolio = \
-            portfolio.PairPortfolio(stock_pair_labels,
-                                    StrategyClass,
-                                    master_portfolio,
-                                    cash=INITIAL_CASH)
-        master_portfolio.add_pair_portfolio(pair_portfolio)
+for i, stock_pair_labels_list in enumerate(stock_pair_labels_list_of_lists):
+    stock_pair_labels_list = stock_pair_labels_list_of_lists[i]
+    TRAINING_DATA_FNAME = TRAINING_DATA_FNAMES[i]
+    TESTING_DATA_FNAME = TESTING_DATA_FNAMES[i]
+    master_portfolio = portfolio.MasterPortfolio(POSITION_LIMIT,
+                                                 TRAINING_DATA_FNAME,
+                                                 TESTING_DATA_FNAME,
+                                                 trading_fee=TRADING_FEE,
+                                                 name=master_portfolio_names[i])
+    for StrategyClass in [strategies.StrategyA, strategies.StrategyB, strategies.StrategyC]:
+        for stock_pair_labels in stock_pair_labels_list:
+            pair_portfolio = \
+                portfolio.PairPortfolio(stock_pair_labels,
+                                        StrategyClass,
+                                        master_portfolio,
+                                        cash=INITIAL_CASH)
+            master_portfolio.add_pair_portfolio(pair_portfolio)
 
-trading.simulate_trading(master_portfolio)
+    trading.simulate_trading(master_portfolio)
 
-plotting.plot_average_values_over_time(master_portfolio)
-plotting.plot_values_over_time(master_portfolio)
-plotting.plot_position_over_time(master_portfolio)
-plotting.plot_strategy_c_bollinger_bands_and_trades(master_portfolio)
+    plotting.plot_average_values_over_time(master_portfolio)
+    plotting.plot_values_over_time(master_portfolio)
+    plotting.plot_position_over_time(master_portfolio)
+    plotting.plot_strategy_c_bollinger_bands_and_trades(master_portfolio)
 
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")

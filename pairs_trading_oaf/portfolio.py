@@ -18,7 +18,7 @@ class MasterPortfolio:
     trades.
     """
     def __init__(self, position_limit: int, training_data_str: str, testing_data_str: str,
-                 trading_fee: float = 0.0):
+                 trading_fee: float = 0.0, name: str = "Master Portfolio"):
         self.position_limit = position_limit
         self.training_data_str = training_data_str
         self.testing_data_str = testing_data_str
@@ -27,6 +27,7 @@ class MasterPortfolio:
         self.average_pertofolio_value_over_time = None
         self.strategy_strings = None
         self.average_values_over_time = None
+        self.name = name
 
     def add_pair_portfolio(self, pair_portfolio):
         """

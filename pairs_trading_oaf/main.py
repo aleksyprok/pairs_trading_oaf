@@ -20,8 +20,8 @@ tic = time.perf_counter()
 TRAINING_DATA_FNAME = "Price Data - CSV - Formation Period.csv"
 TESTING_DATA_FNAME = "Price Data - CSV - Trading Period.csv"
 TRADING_FEE = 0.0002
-INITIAL_CASH = 10
-POSITION_LIMIT = INITIAL_CASH * 0.2
+INITIAL_CASH = 1
+POSITION_LIMIT = INITIAL_CASH * 0.3
 
 stock_pair_labels_list = [
     ("Microsoft Corporation (NasdaqGS:MSFT)", "Apple Inc. (NasdaqGS:AAPL)"),

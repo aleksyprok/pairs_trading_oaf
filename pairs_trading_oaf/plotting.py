@@ -114,46 +114,130 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
     master_portfolio.calc_strategy_strings()
     pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
     stock_pair_labels = pairs_portfolio_index_dict[master_portfolio.strategy_strings[0]].keys()
+    num_bins = 100
 
     for stock_pair_label in stock_pair_labels:
         pairs_portfolio_index = pairs_portfolio_index_dict["StrategyC"][stock_pair_label]
         pair_portfolio = master_portfolio.pair_portfolios[pairs_portfolio_index]
 
-        fig, ax = plt.subplots(figsize=(12, 7))
-        ax.plot(pair_portfolio.dates_over_time, pair_portfolio.ratio_over_time,
+        fig, ax = plt.subplots(figsize=(4, 4))
+        ax.plot(pair_portfolio.dates_over_time[-num_bins:],
+                pair_portfolio.ratio_over_time[-num_bins:],
                 label="Ratio over time")
 
         band_color = 'skyblue'
-        ax.plot(pair_portfolio.dates_over_time, pair_portfolio.strategy.upper_band_over_time,
+        ax.plot(pair_portfolio.dates_over_time[-num_bins:],
+                pair_portfolio.strategy.upper_band_over_time[-num_bins:],
                 label="Upper Bollinger Band", color=band_color)
-        ax.plot(pair_portfolio.dates_over_time, pair_portfolio.strategy.lower_band_over_time,
+        ax.plot(pair_portfolio.dates_over_time[-num_bins:],
+                pair_portfolio.strategy.lower_band_over_time[-num_bins:],
                 label="Lower Bollinger Band", color=band_color)
 
         cash_delta = np.diff(pair_portfolio.cash_over_time,
                              prepend=pair_portfolio.cash_over_time[0])
 
-        for i, delta in enumerate(cash_delta):
+        for i, delta in enumerate(cash_delta[-num_bins:]):
             if delta != 0:
                 color = 'green' if delta > 0 else 'red'
 
-                position = pair_portfolio.position_over_time[i]
+                position = pair_portfolio.position_over_time[-num_bins:][i]
                 delta_text = f'{position}\nΔ${delta:.2f}'
 
                 ax.annotate(delta_text,
-                            xy=(pair_portfolio.dates_over_time[i],
-                                pair_portfolio.ratio_over_time[i]),
-                            xytext=(0, 10), textcoords='offset points',
+                            xy=(pair_portfolio.dates_over_time[-num_bins:][i],
+                                pair_portfolio.ratio_over_time[-num_bins:][i]),
+                            xytext=(0, 30), textcoords='offset points',
                             arrowprops=dict(arrowstyle="->", color=color),
                             ha='center', va='bottom', color=color)
 
-        ax.set_ylabel(f'Ratio of the pair {stock_pair_label}')
+        ax.set_ylabel(f'Ratio of the {stock_pair_label} prices')
         plt.xticks(rotation=45)
-        ax.set_title(f'StrategyC Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
+        # ax.set_title(f'StrategyC Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
         ax.legend()
 
         plot_subdir = os.path.join(plots_dir, 'strategy_c_bollinger_bands_and_trades')
         os.makedirs(plot_subdir, exist_ok=True)
         fname = os.path.join(plot_subdir,
                              f'strategy_c_bollinger_bands_and_trades_{stock_pair_label}.png')
+        fig.savefig(fname, dpi=300, bbox_inches='tight')
+        plt.close()
+
+def plot_strategy_b_macd_histogram_and_trades(master_portfolio):
+    """
+    Plots the MACD histogram and annotates the trades for Strategy B
+    """
+
+    current_dir = os.path.dirname(__file__)
+    plots_dir = os.path.join(current_dir, '..', 'plots', master_portfolio.name)
+    os.makedirs(plots_dir, exist_ok=True)
+    master_portfolio.calc_strategy_strings()
+    pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
+    stock_pair_labels = pairs_portfolio_index_dict[master_portfolio.strategy_strings[0]].keys()
+    num_bins = 50
+
+    for stock_pair_label in stock_pair_labels:
+        pairs_portfolio_index = pairs_portfolio_index_dict["StrategyB"][stock_pair_label]
+        pair_portfolio = master_portfolio.pair_portfolios[pairs_portfolio_index]
+
+        # Figure needs to go in a powerpoint presentation on the right half of a 16:9 slide,
+        # therefore the figsize is set to (5, 4)
+        # The figure has two subplots, the top one shows the ratio over time
+        # as well as the fast and slow ewma over time.
+        # The bottom figure shows the MACD and the signal line over time.
+        fig, axs = plt.subplots(2, 1, figsize=(4, 4), sharex=True)
+        axs[0].plot(pair_portfolio.dates_over_time[-num_bins:],
+                    pair_portfolio.ratio_over_time[-num_bins:],
+                    label="Ratio over time")
+        axs[0].plot(pair_portfolio.dates_over_time[-num_bins:],
+                    pair_portfolio.strategy.over_time_vals.fast_ewma[-num_bins:],
+                    label="Fast EWMA")
+        axs[0].plot(pair_portfolio.dates_over_time[-num_bins:],
+                    pair_portfolio.strategy.over_time_vals.slow_ewma[-num_bins:],
+                    label="Slow EWMA")
+        axs[0].set_ylabel(f'Ratio of {stock_pair_label} prices')
+        cash_delta = np.diff(pair_portfolio.cash_over_time,
+                             prepend=pair_portfolio.cash_over_time[0])
+        for i, delta in enumerate(cash_delta[-num_bins:]):
+            if delta != 0:
+                color = 'green' if delta > 0 else 'red'
+                position = pair_portfolio.position_over_time[-num_bins:][i]
+                delta_text = f'{position}'
+                axs[0].annotate(delta_text,
+                                xy=(pair_portfolio.dates_over_time[-num_bins:][i],
+                                    pair_portfolio.ratio_over_time[-num_bins:][i]),
+                                xytext=(0, 30), textcoords='offset points',
+                                arrowprops=dict(arrowstyle="->", color=color),
+                                ha='center', va='bottom', color=color)
+        axs[0].legend()
+
+        axs[1].plot(pair_portfolio.dates_over_time[-num_bins:],
+                    pair_portfolio.strategy.over_time_vals.macd[-num_bins:],
+                    label="MACD")
+        axs[1].plot(pair_portfolio.dates_over_time[-num_bins:],
+                    pair_portfolio.strategy.over_time_vals.signal[-num_bins:],
+                    label="Signal Line")
+        # Add annotations for the trades
+        cash_delta = np.diff(pair_portfolio.cash_over_time,
+                             prepend=pair_portfolio.cash_over_time[0])
+        for i, delta in enumerate(cash_delta[-num_bins:]):
+            if delta != 0:
+                color = 'green' if delta > 0 else 'red'
+                position = pair_portfolio.position_over_time[-num_bins:][i]
+                delta_text = f'{position}'
+                axs[1].annotate(delta_text,
+                                xy=(pair_portfolio.dates_over_time[-num_bins:][i],
+                                    pair_portfolio.strategy.over_time_vals.macd[-num_bins:][i]),
+                                xytext=(0, 30),
+                                textcoords='offset points',
+                                arrowprops=dict(arrowstyle="->", color=color),
+                                ha='center', va='bottom', color=color)
+        axs[1].set_ylabel('MACD & Signal')
+        axs[1].legend()
+        plt.xticks(rotation=45)
+
+        plot_subdir = os.path.join(plots_dir, 'strategy_b_macd_histogram_and_trades')
+        os.makedirs(plot_subdir, exist_ok=True)
+        fname = os.path.join(plot_subdir,
+                             f'strategy_b_macd_histogram_and_trades_{stock_pair_label}.png')
         fig.savefig(fname, dpi=300, bbox_inches='tight')
         plt.close()

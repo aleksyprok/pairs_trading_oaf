@@ -139,6 +139,16 @@ class StrategyB(BaseStrategy):
             self.macd = None
             self.signal = None
 
+    class OverTimeVals:
+        """
+        Class to store the MACD and signal values over time.
+        """
+        def __init__(self):
+            self.macd = []
+            self.signal = []
+            self.fast_ewma = []
+            self.slow_ewma = []
+
     def __init__(self, pair_portfolio,
                  fast_period: int = 12,
                  slow_period: int = 26,
@@ -146,6 +156,7 @@ class StrategyB(BaseStrategy):
                  training_period: int = 100):
         self.pair_portfolio = pair_portfolio
         self.macd = self.MACDVals(fast_period, slow_period, signal_period)
+        self.over_time_vals = self.OverTimeVals()
         self.calc_initial_macd_signal(training_period)
 
     def calc_macd_signal(self, ratio):
@@ -215,6 +226,11 @@ class StrategyB(BaseStrategy):
         # Update the stored MACD and signal values ready for the next day
         self.macd.macd = new_macd
         self.macd.signal = new_signal
+
+        self.over_time_vals.fast_ewma.append(self.macd.fast_ewma)
+        self.over_time_vals.slow_ewma.append(self.macd.slow_ewma)
+        self.over_time_vals.macd.append(self.macd.macd)
+        self.over_time_vals.signal.append(self.macd.signal)
 
         return position
 

@@ -28,7 +28,7 @@ INITIAL_CASH = 1
 POSITION_LIMIT = INITIAL_CASH * 0.3
 
 stock_pair_labels_list_of_lists = []
-stock_pair_labels_list = [("Bitcoin (:BTC_over_USD)", "Ethereum (:ETH_over_USD)")]
+stock_pair_labels_list = [("Bitcoin (:BTC)", "Ethereum (:ETH)")]
 stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
 stock_pair_labels_list = [
     ("iShares MSCI EAFE ETF (NYSE Arca:EFA)", "SPDR Gold Trust (NYSE Arca:GLD)"),
@@ -78,6 +78,7 @@ for i, stock_pair_labels_list in enumerate(stock_pair_labels_list_of_lists):
     plotting.plot_values_over_time(master_portfolio)
     plotting.plot_position_over_time(master_portfolio)
     plotting.plot_strategy_c_bollinger_bands_and_trades(master_portfolio)
+    plotting.plot_strategy_b_macd_histogram_and_trades(master_portfolio)
 
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")

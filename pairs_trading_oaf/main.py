@@ -24,32 +24,46 @@ TESTING_DATA_FNAMES = ["Price Data - CSV - Trading Period - Crypto.csv",
                        "Price Data - CSV - Trading Period - ETF.csv",
                        "Price Data - CSV - Trading Period.csv"]
 TRADING_FEE = 0.0002
-INITIAL_CASH = 1
-POSITION_LIMIT = INITIAL_CASH * 0.3
+INITIAL_CASH = 10
+POSITION_LIMIT = INITIAL_CASH * 0.1
 
+# stock_pair_labels_list_of_lists = []
+# stock_pair_labels_list = [("Bitcoin (:BTC)", "Ethereum (:ETH)")]
+# stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
+# stock_pair_labels_list = [
+#     ("iShares MSCI EAFE ETF (NYSE Arca:EFA)", "SPDR Gold Trust (NYSE Arca:GLD)"),
+#     ("iShares Core S&P 500 ETF (NYSE Arca:IVV)", "iShares U.S. Real Estate ETF (NYSE Arca:IYR)"),
+#     ("VanEck Oil Services ETF (NYSE Arca:OIH)", "iShares Silver Trust (NYSE Arca:SLV)"),
+#     ("SPDR S&P 500 ETF Trust (NYSE Arca:SPY)",
+#      "Vanguard FTSE Developed Markets ETF (NYSE Arca:VEA)"),
+#     ("Vanguard Real Estate ETF (NYSE Arca:VNQ)", "Energy Select Sector SPDR Fund (NYSE Arca:XLE)"),
+# ]
+# stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
+# stock_pair_labels_list = [
+#     ("Microsoft Corporation (NasdaqGS:MSFT)", "Apple Inc. (NasdaqGS:AAPL)"),
+#     ("Bank of America Corporation (NYSE:BAC)", "JPMorgan Chase & Co. (NYSE:JPM)"),
+#     ("JPMorgan Chase & Co. (NYSE:JPM)", "Bank of America Corporation (NYSE:BAC)"),
+#     ("Exxon Mobil Corporation (NYSE:XOM)", "Chevron Corporation (NYSE:CVX)"),
+#     ("Walmart Inc. (NYSE:WMT)", "Target Corporation (NYSE:TGT)"),
+#     ("The Coca-Cola Company (NYSE:KO)", "PepsiCo, Inc. (NasdaqGS:PEP)"),
+#     ("Johnson & Johnson (NYSE:JNJ)", "Abbott Laboratories (NYSE:ABT)"),
+#     ("The Procter & Gamble Company (NYSE:PG)", "Unilever PLC (LSE:ULVR)"),
+#     ("The Boeing Company (NYSE:BA)", "Airbus SE (ENXTPA:AIR)"),
+#     ("Caterpillar Inc. (NYSE:CAT)", "Deere & Company (NYSE:DE)"),
+#     ("Wells Fargo & Company (NYSE:WFC)", "Citigroup Inc. (NYSE:C)"),
+# ]
+# stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
+# master_portfolio_names = ["Crypto", "ETFs", "Stocks"]
 stock_pair_labels_list_of_lists = []
-stock_pair_labels_list = [("Bitcoin (:BTC)", "Ethereum (:ETH)")]
+stock_pair_labels_list = []
+stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
+stock_pair_labels_list = []
 stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
 stock_pair_labels_list = [
-    ("iShares MSCI EAFE ETF (NYSE Arca:EFA)", "SPDR Gold Trust (NYSE Arca:GLD)"),
-    ("iShares Core S&P 500 ETF (NYSE Arca:IVV)", "iShares U.S. Real Estate ETF (NYSE Arca:IYR)"),
-    ("VanEck Oil Services ETF (NYSE Arca:OIH)", "iShares Silver Trust (NYSE Arca:SLV)"),
-    ("SPDR S&P 500 ETF Trust (NYSE Arca:SPY)",
-     "Vanguard FTSE Developed Markets ETF (NYSE Arca:VEA)"),
-    ("Vanguard Real Estate ETF (NYSE Arca:VNQ)", "Energy Select Sector SPDR Fund (NYSE Arca:XLE)"),
-]
-stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
-stock_pair_labels_list = [
-    ("Microsoft Corporation (NasdaqGS:MSFT)", "Apple Inc. (NasdaqGS:AAPL)"),
-    ("Bank of America Corporation (NYSE:BAC)", "JPMorgan Chase & Co. (NYSE:JPM)"),
-    ("Exxon Mobil Corporation (NYSE:XOM)", "Chevron Corporation (NYSE:CVX)"),
+    ("JPMorgan Chase & Co. (NYSE:JPM)", "Bank of America Corporation (NYSE:BAC)"),
+    ("Chevron Corporation (NYSE:CVX)", "Exxon Mobil Corporation (NYSE:XOM)"),
     ("Walmart Inc. (NYSE:WMT)", "Target Corporation (NYSE:TGT)"),
-    ("The Coca-Cola Company (NYSE:KO)", "PepsiCo, Inc. (NasdaqGS:PEP)"),
-    ("Johnson & Johnson (NYSE:JNJ)", "Abbott Laboratories (NYSE:ABT)"),
-    ("The Procter & Gamble Company (NYSE:PG)", "Unilever PLC (LSE:ULVR)"),
-    ("The Boeing Company (NYSE:BA)", "Airbus SE (ENXTPA:AIR)"),
     ("Caterpillar Inc. (NYSE:CAT)", "Deere & Company (NYSE:DE)"),
-    ("Wells Fargo & Company (NYSE:WFC)", "Citigroup Inc. (NYSE:C)"),
 ]
 stock_pair_labels_list_of_lists.append(stock_pair_labels_list)
 master_portfolio_names = ["Crypto", "ETFs", "Stocks"]
@@ -63,7 +77,11 @@ for i, stock_pair_labels_list in enumerate(stock_pair_labels_list_of_lists):
                                                  TESTING_DATA_FNAME,
                                                  trading_fee=TRADING_FEE,
                                                  name=master_portfolio_names[i])
-    for StrategyClass in [strategies.StrategyA, strategies.StrategyB, strategies.StrategyC]:
+    strategy_list = [strategies.StrategyA,
+                     strategies.StrategyB,
+                     strategies.StrategyC,
+                     strategies.StrategyD]
+    for StrategyClass in strategy_list:
         for stock_pair_labels in stock_pair_labels_list:
             pair_portfolio = \
                 portfolio.PairPortfolio(stock_pair_labels,
@@ -74,11 +92,12 @@ for i, stock_pair_labels_list in enumerate(stock_pair_labels_list_of_lists):
 
     trading.simulate_trading(master_portfolio)
 
-    plotting.plot_average_values_over_time(master_portfolio)
-    plotting.plot_values_over_time(master_portfolio)
-    plotting.plot_position_over_time(master_portfolio)
-    plotting.plot_strategy_c_bollinger_bands_and_trades(master_portfolio)
-    plotting.plot_strategy_b_macd_histogram_and_trades(master_portfolio)
+# plotting.plot_average_values_over_time(master_portfolio)
+# plotting.plot_values_over_time(master_portfolio)
+# plotting.plot_position_over_time(master_portfolio)
+# plotting.plot_strategy_c_bollinger_bands_and_trades(master_portfolio)
+# plotting.plot_strategy_b_macd_histogram_and_trades(master_portfolio)
+plotting.plot_strategy_b_against_d(master_portfolio)
 
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")

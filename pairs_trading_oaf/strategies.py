@@ -23,6 +23,7 @@ class StrategyX(BaseStrategy):
 """
 
 from abc import ABC, abstractmethod
+import numpy as np
 import pandas as pd
 from pairs_trading_oaf import data
 
@@ -283,3 +284,71 @@ class StrategyC(BaseStrategy):
             return 'long A short B'
         else:
             return self.pair_portfolio.position
+
+class StrategyD(BaseStrategy):
+    """
+    This strategy is meant to be as close to Golden's as possible.
+    |z| ≤ 1: Close (profit)
+    1.5 < |z| ≤ 2: Open position
+    |z| > 2: Close (stop loss) Bollinger Bands: mean ± x SD of 45-day ratio
+    Factor x set by risk, volatility
+    If ratio > upper band, short the ratio.
+    """
+    def __init__(self, pair_portfolio,
+                 tight_window_size: int = 5,
+                 wider_window_size: int = 60,
+                 open_threshold: float = 1.5,
+                 stop_threshold: float = 2.0,
+                 close_threshold: float = 1):
+        self.pair_portfolio = pair_portfolio
+        self.tight_window_size = tight_window_size
+        self.wider_window_size = wider_window_size
+        self.open_threshold = open_threshold
+        self.stop_threshold = stop_threshold
+        self.close_threshold = close_threshold
+        self.tight_window_prices = self.calculate_initial_window(self.tight_window_size)
+        self.wider_window_prices = self.calculate_initial_window(self.wider_window_size)
+
+    def calculate_new_position(self):
+        """
+        Calculate the new position for the pair portfolio.
+
+        If |z| ≤ 1: Close (profit)
+        1.5 < |z| ≤ 2: Open position
+        |z| > 2: Close (stop loss)
+        """
+        new_prices = self.pair_portfolio.stock_pair_prices
+        current_date = self.pair_portfolio.date
+        stock_pair_labels = self.pair_portfolio.stock_pair_labels
+        new_data = pd.DataFrame([new_prices],
+                                columns=stock_pair_labels,
+                                index=[current_date])
+        self.tight_window_prices = pd.concat([self.tight_window_prices, new_data])
+        self.tight_window_prices = self.tight_window_prices.iloc[1:]
+        self.wider_window_prices = pd.concat([self.wider_window_prices, new_data])
+        self.wider_window_prices = self.wider_window_prices.iloc[1:]
+        tight_ratio = self.tight_window_prices[stock_pair_labels[0]] \
+                    / self.tight_window_prices[stock_pair_labels[1]]
+        wider_ratio = self.wider_window_prices[stock_pair_labels[0]] \
+                    / self.wider_window_prices[stock_pair_labels[1]]
+        tight_ratio_mean = tight_ratio.mean()
+        wider_ratio_mean = wider_ratio.mean()
+        wider_ratio_std = wider_ratio.std()
+        z_score = (tight_ratio_mean - wider_ratio_mean) / wider_ratio_std
+
+        if np.abs(z_score) <= self.close_threshold:
+            # |z| ≤ 1 (Close position, profit)
+            return 'no position'
+        elif np.abs(z_score) > self.stop_threshold:
+            # |z| > 2 (Close position, stop loss)
+            return 'no position'
+        elif np.abs(z_score) <= self.open_threshold:
+            #1 < |z| ≤ 1.5 (Don't change position)
+            return self.pair_portfolio.position
+        else:
+            # 1.5 < |z| ≤ 2 (Open position)
+            if z_score > 0:
+                return 'long B short A'
+            else:
+                return 'long A short B'
+

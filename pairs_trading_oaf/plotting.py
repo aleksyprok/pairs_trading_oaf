@@ -51,6 +51,7 @@ def plot_values_over_time(master_portfolio):
                 ax.plot(pair_portfolio.dates_over_time,
                         pair_portfolio.__dict__[value_string + "_over_time"],
                         label=strategy_string)
+                plt.grid(True)
             ax.set_ylabel(value_string + ' [USD] (Position limit = $' +
                           f'{master_portfolio.position_limit:.2f})')
             plt.xticks(rotation=45)
@@ -128,7 +129,8 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
         band_color = 'skyblue'
         ax.plot(pair_portfolio.dates_over_time[-num_bins:],
                 pair_portfolio.strategy.upper_band_over_time[-num_bins:],
-                label="Upper Bollinger Band", color=band_color)
+                label="Bollinger Band", color=band_color)
+        ax.legend()
         ax.plot(pair_portfolio.dates_over_time[-num_bins:],
                 pair_portfolio.strategy.lower_band_over_time[-num_bins:],
                 label="Lower Bollinger Band", color=band_color)
@@ -141,7 +143,8 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
                 color = 'green' if delta > 0 else 'red'
 
                 position = pair_portfolio.position_over_time[-num_bins:][i]
-                delta_text = f'{position}\nΔ${delta:.2f}'
+                # delta_text = f'{position}\nΔ${delta:.2f}'
+                delta_text = f'{position}'
 
                 ax.annotate(delta_text,
                             xy=(pair_portfolio.dates_over_time[-num_bins:][i],
@@ -150,10 +153,11 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
                             arrowprops=dict(arrowstyle="->", color=color),
                             ha='center', va='bottom', color=color)
 
-        ax.set_ylabel(f'Ratio of the {stock_pair_label} prices')
+        # ax.set_ylabel(f'Ratio of the {stock_pair_label} prices')
+        # Replace _ with / in stock pair label
+        ax.set_ylabel(f'Pair price ratio ({stock_pair_label.replace("_", "/")})')
         plt.xticks(rotation=45)
         # ax.set_title(f'StrategyC Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
-        ax.legend()
 
         plot_subdir = os.path.join(plots_dir, 'strategy_c_bollinger_bands_and_trades')
         os.makedirs(plot_subdir, exist_ok=True)
@@ -241,3 +245,52 @@ def plot_strategy_b_macd_histogram_and_trades(master_portfolio):
                              f'strategy_b_macd_histogram_and_trades_{stock_pair_label}.png')
         fig.savefig(fname, dpi=300, bbox_inches='tight')
         plt.close()
+
+def plot_strategy_b_against_d(master_portfolio):
+    """
+    Plot the MACD strategy (Strategy B) against Golden's cointigration strategy (Strategy D).
+    For the following stock pairs:
+    - JPM_BAC
+    - WMT_TGT
+    - CAT_DE
+    - CVX_XOM
+    """
+    # stock_pair_labels = ["JPM_BAC", "WMT_TGT", "CAT_DE", "CVX_XOM"]
+    stock_pair_labels = ["WMT_TGT", "CVX_XOM", "CAT_DE", "JPM_BAC"]
+    clrs = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
+    master_portfolio.calc_strategy_strings()
+    pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
+    fig, ax = plt.subplots()
+    for i, stock_pair_label in enumerate(stock_pair_labels):
+        pairs_portfolio_index_b = pairs_portfolio_index_dict["StrategyB"][stock_pair_label]
+        pairs_portfolio_index_d = pairs_portfolio_index_dict["StrategyD"][stock_pair_label]
+        pair_portfolio_b = master_portfolio.pair_portfolios[pairs_portfolio_index_b]
+        pair_portfolio_d = master_portfolio.pair_portfolios[pairs_portfolio_index_d]
+
+        ax.plot(pair_portfolio_b.dates_over_time,
+                np.array(pair_portfolio_b.cash_over_time) - pair_portfolio_b.cash_over_time[0],
+                color = clrs[i],
+                linestyle = '--')
+        ax.plot(pair_portfolio_d.dates_over_time,
+                np.array(pair_portfolio_d.cash_over_time) - pair_portfolio_d.cash_over_time[0],
+                color = clrs[i],
+                linestyle = '-')
+    plt.grid(True)
+    ax.set_ylabel('Cash')
+    # Make custom legend
+    for i, stock_pair_label in enumerate(stock_pair_labels):
+        ax.plot([], [], color=clrs[i], label=stock_pair_label)
+    ax.legend()
+    strategies = ['Mean-reversion', 'MACD']
+    linestyles = ['-', '--']
+    for i, strategy in enumerate(strategies):
+        linestyle = linestyles[i]
+        ax.plot([], [], color='k', linestyle=linestyle, label=strategy)
+    ax.legend()
+    current_dir = os.path.dirname(__file__)
+    plots_dir = os.path.join(current_dir, '..', 'plots', master_portfolio.name)
+    os.makedirs(plots_dir, exist_ok=True)
+    fname = os.path.join(plots_dir,
+                         'strategy_b_against_d.png')
+    fig.savefig(fname,
+                dpi=300, bbox_inches='tight')

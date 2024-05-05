@@ -193,16 +193,8 @@ def test_close_position_with_transaction_fee(master_portfolio):
 
     # Assertions
     total_trade_value = 10 * 100 + (-5) * 200
-    transaction_fee = trading.calculate_transaction_fee(total_trade_value, pair_portfolio.trading_fee)
+    total_trade_amount = abs(10) * 100 + abs(-5) * 200
+    transaction_fee = total_trade_amount * pair_portfolio.trading_fee
     expected_cash = 1000 + total_trade_value - transaction_fee
     assert pair_portfolio.cash == pytest.approx(expected_cash)
     assert pair_portfolio.shares == (0, 0)
-
-def test_calculate_transaction_fee():
-    """
-    Test the calculate_transaction_fee function.
-    """
-    trade_amount = 1000
-    trading_fee = 0.001
-    expected_fee = 1
-    assert trading.calculate_transaction_fee(trade_amount, trading_fee) == expected_fee

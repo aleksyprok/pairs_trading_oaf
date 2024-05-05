@@ -5,6 +5,7 @@ Functions to plot trading data.
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 def plot_average_values_over_time(master_portfolio):
     """
@@ -121,7 +122,7 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
         pairs_portfolio_index = pairs_portfolio_index_dict["StrategyC"][stock_pair_label]
         pair_portfolio = master_portfolio.pair_portfolios[pairs_portfolio_index]
 
-        fig, ax = plt.subplots(figsize=(4, 4))
+        fig, ax = plt.subplots(figsize=(8, 8))
         ax.plot(pair_portfolio.dates_over_time[-num_bins:],
                 pair_portfolio.ratio_over_time[-num_bins:],
                 label="Ratio over time")
@@ -149,21 +150,25 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
                 ax.annotate(delta_text,
                             xy=(pair_portfolio.dates_over_time[-num_bins:][i],
                                 pair_portfolio.ratio_over_time[-num_bins:][i]),
-                            xytext=(0, 30), textcoords='offset points',
+                            xytext=(0, 90), textcoords='offset points',
                             arrowprops=dict(arrowstyle="->", color=color),
                             ha='center', va='bottom', color=color)
 
         # ax.set_ylabel(f'Ratio of the {stock_pair_label} prices')
         # Replace _ with / in stock pair label
         ax.set_ylabel(f'Pair price ratio ({stock_pair_label.replace("_", "/")})')
-        plt.xticks(rotation=45)
+        # plt.xticks(rotation=45)
+        ax.grid(True)
+        import matplotlib.dates as mdates
+        ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=[4, 5, 6, 7]))
+        # ax.xaxis.set_major_locator(plt.MultipleLocator(5))
         # ax.set_title(f'StrategyC Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
 
         plot_subdir = os.path.join(plots_dir, 'strategy_c_bollinger_bands_and_trades')
         os.makedirs(plot_subdir, exist_ok=True)
         fname = os.path.join(plot_subdir,
                              f'strategy_c_bollinger_bands_and_trades_{stock_pair_label}.png')
-        fig.savefig(fname, dpi=300, bbox_inches='tight')
+        fig.savefig(fname, dpi=1000, bbox_inches='tight')
         plt.close()
 
 def plot_strategy_b_macd_histogram_and_trades(master_portfolio):
@@ -188,7 +193,7 @@ def plot_strategy_b_macd_histogram_and_trades(master_portfolio):
         # The figure has two subplots, the top one shows the ratio over time
         # as well as the fast and slow ewma over time.
         # The bottom figure shows the MACD and the signal line over time.
-        fig, axs = plt.subplots(2, 1, figsize=(4, 4), sharex=True)
+        fig, axs = plt.subplots(2, 1, figsize=(8, 8), sharex=False)
         axs[0].plot(pair_portfolio.dates_over_time[-num_bins:],
                     pair_portfolio.ratio_over_time[-num_bins:],
                     label="Ratio over time")
@@ -209,7 +214,7 @@ def plot_strategy_b_macd_histogram_and_trades(master_portfolio):
                 axs[0].annotate(delta_text,
                                 xy=(pair_portfolio.dates_over_time[-num_bins:][i],
                                     pair_portfolio.ratio_over_time[-num_bins:][i]),
-                                xytext=(0, 30), textcoords='offset points',
+                                xytext=(0, 60), textcoords='offset points',
                                 arrowprops=dict(arrowstyle="->", color=color),
                                 ha='center', va='bottom', color=color)
         axs[0].legend()
@@ -231,19 +236,49 @@ def plot_strategy_b_macd_histogram_and_trades(master_portfolio):
                 axs[1].annotate(delta_text,
                                 xy=(pair_portfolio.dates_over_time[-num_bins:][i],
                                     pair_portfolio.strategy.over_time_vals.macd[-num_bins:][i]),
-                                xytext=(0, 30),
+                                xytext=(0, 60),
                                 textcoords='offset points',
                                 arrowprops=dict(arrowstyle="->", color=color),
                                 ha='center', va='bottom', color=color)
         axs[1].set_ylabel('MACD & Signal')
         axs[1].legend()
-        plt.xticks(rotation=45)
+        # Make x-axis labels more sparse
+        # axs[0].xaxis.set_major_locator(plt.MaxNLocator(5))
+        # axs[1].xaxis.set_major_locator(plt.MaxNLocator(5))
+        # Change x-axis labels to just show year and month and at 1st of May, June
+        # and July
+        import matplotlib.dates as mdates
+        axs[0].xaxis.set_major_locator(mdates.MonthLocator(bymonth=[5, 6, 7]))
+        axs[1].xaxis.set_major_locator(mdates.MonthLocator(bymonth=[5, 6, 7]))
+        # axs[0].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+        # axs[1].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+        # axs[0].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+
+        # plt.xticks(rotation=45)
+        # Add grid to both axes
+        for ax in axs:
+            ax.grid(True)
+        # Add more vertical grid lines
+        for ax in axs:
+            ax.grid(which='minor', axis='x', linestyle='-')
+            ax.grid(which='major', axis='x', linestyle='-')
+            ax.grid(which='minor', axis='y', linestyle='-')
+            ax.grid(which='major', axis='y', linestyle='-')
+            # Add more grid lines or xticks if needs be
+            # Add more grid lines or xticks if needs be
+        # Add more major grid lines to x-axis
+        # Add more major grid lines to x-axis
+        axs[0].xaxis.set_major_locator(plt.MultipleLocator(10))
+        axs[1].xaxis.set_major_locator(plt.MultipleLocator(10))
+
+            
+
 
         plot_subdir = os.path.join(plots_dir, 'strategy_b_macd_histogram_and_trades')
         os.makedirs(plot_subdir, exist_ok=True)
         fname = os.path.join(plot_subdir,
                              f'strategy_b_macd_histogram_and_trades_{stock_pair_label}.png')
-        fig.savefig(fname, dpi=300, bbox_inches='tight')
+        fig.savefig(fname, dpi=1000, bbox_inches='tight')
         plt.close()
 
 def plot_strategy_b_against_d(master_portfolio):
@@ -294,3 +329,55 @@ def plot_strategy_b_against_d(master_portfolio):
                          'strategy_b_against_d.png')
     fig.savefig(fname,
                 dpi=300, bbox_inches='tight')
+
+def make_csv_strategy_d_and_b(master_portfolio):
+    """
+    Make a CSV of cash everytime Strategy D or Strategy B closes a position with date as a column.
+    Use Pandas dataframe to do this.
+    """
+    current_dir = os.path.dirname(__file__)
+    plots_dir = os.path.join(current_dir, '..', 'plots', master_portfolio.name)
+    os.makedirs(plots_dir, exist_ok=True)
+    master_portfolio.calc_strategy_strings()
+    pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
+    for strategy_string in pairs_portfolio_index_dict.keys():
+        for stock_pair_label in pairs_portfolio_index_dict[strategy_string].keys():
+            pairs_portfolio_index = pairs_portfolio_index_dict[strategy_string][stock_pair_label]
+            pair_portfolio = master_portfolio.pair_portfolios[pairs_portfolio_index]
+            df = pd.DataFrame()
+            df['date'] = pair_portfolio.dates_over_time
+            df['cash'] = np.array(pair_portfolio.cash_over_time) - pair_portfolio.cash_over_time[0]
+            df['position'] = pair_portfolio.position_over_time
+            plot_subdir = os.path.join(plots_dir, strategy_string)
+            os.makedirs(plot_subdir, exist_ok=True)
+            fname = os.path.join(plot_subdir,
+                                 f'{strategy_string}_{stock_pair_label}.csv')
+            df.to_csv(fname)
+            # Filter csv to only show the cash when the position changes because this is the
+            # only time when the cash changes
+            df = df[df['position'] != df['position'].shift(1)]
+            fname = os.path.join(plot_subdir,
+                                 f'{strategy_string}_{stock_pair_label}_filtered_covids.csv')
+            if strategy_string == "StrategyB":
+                fname = os.path.join(plot_subdir,
+                                     f'MACD_strategy_{stock_pair_label}_filtered_covid.csv')
+            elif strategy_string == "StrategyD":
+                fname = os.path.join(plot_subdir,
+                                     f'Mean-reversion_strategy_{stock_pair_label}_filtered_covid.csv')
+            df.to_csv(fname)
+            # Plot the cash over time from filtered and non-filtered
+            fig, ax = plt.subplots()
+            ax.plot(pair_portfolio.dates_over_time,
+                    np.array(pair_portfolio.cash_over_time) - pair_portfolio.cash_over_time[0],
+                    label='All trades')
+            ax.plot(df['date'], df['cash'], label='Filtered trades')
+            ax.set_ylabel('Cash [USD]')
+            plt.xticks(rotation=45)
+            ax.set_title(f'Cash over time for {strategy_string} {stock_pair_label}')
+            ax.legend()
+            plot_subdir = os.path.join(plots_dir, 'cash_over_time')
+            os.makedirs(plot_subdir, exist_ok=True)
+            fname = os.path.join(plot_subdir,
+                                 f'{strategy_string}_{stock_pair_label}_cash_over_time.png')
+            fig.savefig(fname, dpi=300, bbox_inches='tight')
+            plt.close()

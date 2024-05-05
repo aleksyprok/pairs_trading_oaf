@@ -1,7 +1,7 @@
 """
-Main module for initialising and executing pairs trades.
+Main module for initializing and executing pairs trades.
 
-Note that postition limit gives the maximum position size for each stock in the pair in USD.
+Note that position limit gives the maximum position size for each stock in the pair in USD.
 
 We assume that only three possible positions are allowed:
 - long stock A short stock B

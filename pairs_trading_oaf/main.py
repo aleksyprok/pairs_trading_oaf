@@ -97,8 +97,9 @@ for i, stock_pair_labels_list in enumerate(stock_pair_labels_list_of_lists):
     # plotting.plot_position_over_time(master_portfolio)
     # plotting.plot_strategy_c_bollinger_bands_and_trades(master_portfolio)
     # plotting.plot_strategy_b_macd_histogram_and_trades(master_portfolio)
-plotting.plot_strategy_b_against_d(master_portfolio)
-plotting.make_csv_strategy_d_and_b(master_portfolio)
+# plotting.plot_strategy_b_against_d(master_portfolio)
+# plotting.make_csv_strategy_d_and_b(master_portfolio)
+plotting.make_csv_position_strategy_b_d(master_portfolio)
 
 toc = time.perf_counter()
 print(f"Time taken: {toc - tic:0.4f} seconds")

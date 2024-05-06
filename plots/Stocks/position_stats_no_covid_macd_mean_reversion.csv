@@ -1,0 +1,9 @@
+stock_pair_label,strategy_string,num_days_long_A_short_B,num_days_long_B_short_A,num_days_no_position,average_holding_period
+JPM_BAC,MACD,136,126,10,16.375
+CVX_XOM,MACD,145,107,20,10.5
+WMT_TGT,MACD,146,121,5,14.161111111111111
+CAT_DE,MACD,125,137,10,13.794444444444444
+JPM_BAC,Mean-reversion,14,103,155,17.3
+CVX_XOM,Mean-reversion,74,0,198,5.285714285714286
+WMT_TGT,Mean-reversion,13,106,153,13.125
+CAT_DE,Mean-reversion,43,44,185,24.642857142857142

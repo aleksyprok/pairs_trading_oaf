@@ -4,6 +4,7 @@ Functions to plot trading data.
 
 import os
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
 
@@ -159,7 +160,6 @@ def plot_strategy_c_bollinger_bands_and_trades(master_portfolio):
         ax.set_ylabel(f'Pair price ratio ({stock_pair_label.replace("_", "/")})')
         # plt.xticks(rotation=45)
         ax.grid(True)
-        import matplotlib.dates as mdates
         ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=[4, 5, 6, 7]))
         # ax.xaxis.set_major_locator(plt.MultipleLocator(5))
         # ax.set_title(f'StrategyC Bollinger Bands and Trades for Stock Pair {stock_pair_label}')
@@ -247,7 +247,6 @@ def plot_strategy_b_macd_histogram_and_trades(master_portfolio):
         # axs[1].xaxis.set_major_locator(plt.MaxNLocator(5))
         # Change x-axis labels to just show year and month and at 1st of May, June
         # and July
-        import matplotlib.dates as mdates
         axs[0].xaxis.set_major_locator(mdates.MonthLocator(bymonth=[5, 6, 7]))
         axs[1].xaxis.set_major_locator(mdates.MonthLocator(bymonth=[5, 6, 7]))
         # axs[0].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
@@ -270,9 +269,6 @@ def plot_strategy_b_macd_histogram_and_trades(master_portfolio):
         # Add more major grid lines to x-axis
         axs[0].xaxis.set_major_locator(plt.MultipleLocator(10))
         axs[1].xaxis.set_major_locator(plt.MultipleLocator(10))
-
-            
-
 
         plot_subdir = os.path.join(plots_dir, 'strategy_b_macd_histogram_and_trades')
         os.makedirs(plot_subdir, exist_ok=True)
@@ -357,13 +353,13 @@ def make_csv_strategy_d_and_b(master_portfolio):
             # only time when the cash changes
             df = df[df['position'] != df['position'].shift(1)]
             fname = os.path.join(plot_subdir,
-                                 f'{strategy_string}_{stock_pair_label}_filtered_covids.csv')
+                                 f'{strategy_string}_{stock_pair_label}_filtered.csv')
             if strategy_string == "StrategyB":
                 fname = os.path.join(plot_subdir,
-                                     f'MACD_strategy_{stock_pair_label}_filtered_covid.csv')
+                                     f'MACD_strategy_{stock_pair_label}_filtered.csv')
             elif strategy_string == "StrategyD":
                 fname = os.path.join(plot_subdir,
-                                     f'Mean-reversion_strategy_{stock_pair_label}_filtered_covid.csv')
+                                     f'Mean-reversion_strategy_{stock_pair_label}_filtered.csv')
             df.to_csv(fname)
             # Plot the cash over time from filtered and non-filtered
             fig, ax = plt.subplots()
@@ -381,3 +377,54 @@ def make_csv_strategy_d_and_b(master_portfolio):
                                  f'{strategy_string}_{stock_pair_label}_cash_over_time.png')
             fig.savefig(fname, dpi=300, bbox_inches='tight')
             plt.close()
+
+def make_csv_position_strategy_b_d(master_portfolio):
+    """
+    Make a CSV of the total time a position is open, as well as the average time a position is held for. We need four numbers for each stock pair.
+    """
+    current_dir = os.path.dirname(__file__)
+    plots_dir = os.path.join(current_dir, '..', 'plots', master_portfolio.name)
+    os.makedirs(plots_dir, exist_ok=True)
+    master_portfolio.calc_strategy_strings()
+    pairs_portfolio_index_dict = master_portfolio.calc_pairs_portfolio_index_dict()
+    with open(os.path.join(plots_dir, 'position_stats_no_covid_macd_mean_reversion.csv'), 'w', encoding='utf-8') as f:
+        # write header
+        f.write('stock_pair_label,strategy_string,num_days_long_A_short_B,num_days_long_B_short_A,num_days_no_position,'
+                'average_holding_period\n')
+        for strategy_string in ["StrategyB", "StrategyD"]:
+            for stock_pair_label in pairs_portfolio_index_dict[strategy_string].keys():
+                pairs_portfolio_index = pairs_portfolio_index_dict[strategy_string][stock_pair_label]
+                pair_portfolio = master_portfolio.pair_portfolios[pairs_portfolio_index]
+                position_over_time = np.array(pair_portfolio.position_over_time)
+                num_days_in_position = {}
+                num_days_in_position['long A short B'] = np.sum(position_over_time == 'long A short B')
+                num_days_in_position['long B short A'] = np.sum(position_over_time == 'long B short A')
+                num_days_in_position['no position'] = np.sum(position_over_time == 'no position')
+                if strategy_string == "StrategyB":
+                    output_strategy = "MACD"
+                elif strategy_string == "StrategyD":
+                    output_strategy = "Mean-reversion"
+                # Calculate average length of time a position is held consecutively
+                consecutive_days_in_position = {}
+                consecutive_days_in_position['long A short B'] = []
+                consecutive_days_in_position['long B short A'] = []
+                consecutive_days_in_position['no position'] = []
+                last_position = ''
+                for next_position in position_over_time:
+                    if next_position != last_position:
+                        consecutive_days_in_position[next_position].append(1)
+                    elif next_position == last_position:
+                        consecutive_days_in_position[next_position][-1] += 1
+                    last_position = next_position
+                for position in ['long A short B', 'long B short A', 'no position']:
+                    consecutive_days_in_position[position] = np.array(consecutive_days_in_position[position])
+                average_holding_period = {}
+                for position in ['long A short B', 'long B short A', 'no position']:
+                    if len(consecutive_days_in_position[position]) == 0:
+                        average_holding_period[position] = 0
+                    else:
+                        average_holding_period[position] = np.sum(consecutive_days_in_position[position]) / len(consecutive_days_in_position[position])
+                average_holding_period_total = (average_holding_period['long A short B'] + average_holding_period['long B short A']) / 2
+                # Write to CSV
+                f.write(f'{stock_pair_label},{output_strategy},{num_days_in_position["long A short B"]},{num_days_in_position["long B short A"]},'
+                        f'{num_days_in_position["no position"]},{average_holding_period_total}\n')
